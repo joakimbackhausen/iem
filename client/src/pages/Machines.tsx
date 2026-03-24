@@ -155,7 +155,7 @@ export default function Machines() {
   const [showBrandDropdown, setShowBrandDropdown] = useState(false);
 
   useEffect(() => {
-    document.title = 'Maskiner på lager - CR Maskiner | Nye & brugte entreprenørmaskiner';
+    document.title = 'Maskiner på lager - Rold Maskinhandel | Brugte maskiner i Nordjylland';
   }, []);
 
   useEffect(() => {
@@ -234,6 +234,22 @@ export default function Machines() {
   };
 
   const hasActiveFilters = selectedCategory || selectedBrand;
+
+  // Get top-level categories with a representative image from machines in that category
+  const topCategories = useMemo(() => {
+    return categoryTree.map(node => {
+      // Find first machine in this category that has a picture
+      const machine = machines.find(m =>
+        m.category?.some(cat => cat.id === node.id) && m.pictures?.[0]?.url
+      );
+      return {
+        id: node.id,
+        name: node.name,
+        count: node.count,
+        image: machine?.pictures?.[0]?.url || null,
+      };
+    });
+  }, [categoryTree, machines]);
 
   const selectedCategoryName = useMemo(() => {
     if (!selectedCategory) return null;
@@ -379,7 +395,59 @@ export default function Machines() {
           </div>
         </div>
 
-        <div className="max-w-[1360px] mx-auto px-5 sm:px-8 py-8">
+        {/* Category circles */}
+        {!loading && topCategories.length > 0 && (
+          <div className="max-w-[1360px] mx-auto px-5 sm:px-8 pt-8 pb-2">
+            <div className="flex justify-center gap-8 sm:gap-10 overflow-x-auto pb-4">
+              {/* All */}
+              <button
+                onClick={() => { setSelectedCategory(null); setSelectedBrand(null); }}
+                className="flex flex-col items-center gap-2.5 flex-shrink-0 group"
+              >
+                <div className={`w-[76px] h-[76px] sm:w-[88px] sm:h-[88px] rounded-full overflow-hidden border-[3px] transition-all duration-200 flex items-center justify-center ${
+                  !selectedCategory
+                    ? 'border-[#FFD942] shadow-lg shadow-[#FFD942]/20 scale-105'
+                    : 'border-gray-200 group-hover:border-[#FFD942]/50'
+                } bg-[#3B404B]`}>
+                  <span className="text-white text-[14px] font-bold tracking-wide">ALLE</span>
+                </div>
+                <div className="text-center">
+                  <p className={`text-[13px] font-semibold leading-tight ${
+                    !selectedCategory ? 'text-[#3B404B]' : 'text-[#666]'
+                  }`}>Alle</p>
+                  <p className="text-[11px] text-[#aaa] mt-0.5">{machines.length} maskiner</p>
+                </div>
+              </button>
+              {topCategories.map((cat) => (
+                <button
+                  key={cat.id}
+                  onClick={() => selectCategory(cat.id)}
+                  className="flex flex-col items-center gap-2.5 flex-shrink-0 group"
+                >
+                  <div className={`w-[76px] h-[76px] sm:w-[88px] sm:h-[88px] rounded-full overflow-hidden border-[3px] transition-all duration-200 ${
+                    selectedCategory === cat.id
+                      ? 'border-[#FFD942] shadow-lg shadow-[#FFD942]/20 scale-105'
+                      : 'border-gray-200 group-hover:border-[#FFD942]/50'
+                  }`}>
+                    {cat.image ? (
+                      <img src={cat.image} alt={cat.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full bg-gray-100" />
+                    )}
+                  </div>
+                  <div className="text-center">
+                    <p className={`text-[13px] font-semibold leading-tight capitalize ${
+                      selectedCategory === cat.id ? 'text-[#3B404B]' : 'text-[#666]'
+                    }`}>{cat.name}</p>
+                    <p className="text-[11px] text-[#aaa] mt-0.5">{cat.count} maskiner</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="max-w-[1360px] mx-auto px-5 sm:px-8 py-6">
           {loading ? (
             <div className="flex justify-center items-center py-20">
               <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -408,17 +476,19 @@ export default function Machines() {
                             Ingen billede
                           </div>
                         )}
-                        <div className="absolute top-3 left-3">
-                          <span className="bg-white/95 backdrop-blur-sm text-[12px] font-semibold px-2.5 py-1 rounded-full text-[#1a1a1a]">
-                            {machine.year}
-                          </span>
-                        </div>
+                        {machine.year && machine.year !== 'Årgang ukendt' && (
+                          <div className="absolute top-3 left-3">
+                            <span className="bg-white/95 backdrop-blur-sm text-[12px] font-semibold px-2.5 py-1 rounded-full text-[#1a1a1a]">
+                              {machine.year}
+                            </span>
+                          </div>
+                        )}
                       </div>
                       <div className="p-4">
                         <span className="text-[11px] text-gray-400 font-semibold uppercase tracking-wider">
                           {machine.brand}
                         </span>
-                        <h3 className="font-semibold text-[#1a1a1a] text-[15px] mt-1 mb-3 line-clamp-2 leading-snug group-hover:text-[#1a7a3a] transition-colors">
+                        <h3 className="font-semibold text-[#1a1a1a] text-[15px] mt-1 mb-3 line-clamp-2 leading-snug group-hover:text-[#3B404B] transition-colors">
                           {machine.title}
                         </h3>
                         <div className="flex items-end justify-between pt-3 border-t border-gray-100">
@@ -428,7 +498,7 @@ export default function Machines() {
                             </span>
                             <span className="text-[11px] text-gray-400 block mt-0.5">ekskl. moms</span>
                           </div>
-                          <span className="text-[13px] font-semibold text-[#1a7a3a] group-hover:underline">
+                          <span className="text-[13px] font-semibold text-[#3B404B] group-hover:underline">
                             Se mere →
                           </span>
                         </div>

@@ -3,9 +3,6 @@ import { Phone, Mail, MapPin, ArrowRight } from 'lucide-react';
 
 const links = [
   { label: 'Maskiner til salg', href: '/maskiner' },
-  { label: 'Solis Traktor', href: '/solis-traktor' },
-  { label: 'Trailer', href: '/trailer' },
-  { label: 'Finansiering', href: '/finansiering' },
   { label: 'Om os', href: '/om-os' },
   { label: 'Kontakt', href: '/kontakt' },
 ];
@@ -13,22 +10,22 @@ const links = [
 export default function Footer() {
   return (
     <footer>
-      {/* Main footer — dark */}
-      <div className="bg-[#111]">
+      {/* Main footer */}
+      <div className="bg-[#3B404B]">
         <div className="max-w-[1360px] mx-auto px-5 sm:px-8 py-16 lg:py-20">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-10">
             {/* Col 1: Brand */}
             <div>
               <Link href="/" className="inline-block mb-5">
                 <img
-                  src="/cr-logo.png"
-                  alt="CR Maskiner"
-                  className="h-14 w-auto"
+                  src="/rold-logo-white.png"
+                  alt="Rold Maskinhandel"
+                  className="h-10 w-auto"
                 />
               </Link>
               <p className="text-white/40 text-[15px] leading-relaxed">
-                Din professionelle partner inden for køb og salg af nye og brugte
-                entreprenørmaskiner i Sorø.
+                Din maskinhandler i Nordjylland. Køb, salg, udlejning og
+                reparation af brugte maskiner til fornuftige priser.
               </p>
             </div>
 
@@ -57,17 +54,17 @@ export default function Footer() {
                 Kontakt
               </h3>
               <div className="space-y-4 text-[15px]">
-                <a href="tel:+4522232269" className="flex items-center gap-3 text-[#4ade80] font-semibold hover:text-[#22c55e] transition-colors">
+                <a href="tel:+4525159495" className="flex items-center gap-3 text-[#FFD942] font-semibold hover:text-[#f5cd2e] transition-colors">
                   <Phone className="w-4 h-4" />
-                  +45 22 23 22 69
+                  +45 25 15 94 95
                 </a>
-                <a href="mailto:crmaskiner@gmail.com" className="flex items-center gap-3 text-white/40 hover:text-white transition-colors">
+                <a href="mailto:info@roldmaskinhandel.dk" className="flex items-center gap-3 text-white/40 hover:text-white transition-colors">
                   <Mail className="w-4 h-4" />
-                  crmaskiner@gmail.com
+                  info@roldmaskinhandel.dk
                 </a>
                 <div className="flex items-start gap-3 text-white/40">
                   <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                  <span>Nordmarksvej 2<br />4180 Sorø</span>
+                  <span>Haverslevvej 12, Rold<br />9510 Arden</span>
                 </div>
               </div>
             </div>
@@ -78,11 +75,11 @@ export default function Footer() {
                 Find din maskine
               </h3>
               <p className="text-white/40 text-[15px] leading-relaxed mb-5">
-                Vi har altid over 120 maskiner på lager. Ring for fremvisning.
+                Se vores udvalg af brugte maskiner. Ring for fremvisning.
               </p>
               <Link
                 href="/maskiner"
-                className="inline-flex items-center gap-2 bg-[#1a7a3a] text-white text-[14px] font-semibold px-6 py-3 rounded-full hover:bg-[#14632e] transition-colors"
+                className="inline-flex items-center gap-2 bg-[#FFD942] text-[#3B404B] text-[14px] font-semibold px-6 py-3 rounded-full hover:bg-[#f5cd2e] transition-colors"
               >
                 Se maskiner <ArrowRight className="w-4 h-4" />
               </Link>
@@ -92,11 +89,11 @@ export default function Footer() {
       </div>
 
       {/* Bottom bar */}
-      <div className="bg-black">
+      <div className="bg-[#2d3139]">
         <div className="max-w-[1360px] mx-auto px-5 sm:px-8 py-4">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-[13px] text-white/25">
-            <p>&copy; {new Date().getFullYear()} CR Maskiner — Alle rettigheder forbeholdes</p>
-            <p>Nordmarksvej 2, 4180 Sorø</p>
+            <p>&copy; {new Date().getFullYear()} Rold Maskinhandel — CVR 38742108</p>
+            <p>Haverslevvej 12, Rold, 9510 Arden</p>
           </div>
         </div>
       </div>

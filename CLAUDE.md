@@ -1,6 +1,6 @@
-# CR Maskiner
+# Rold Maskinhandel
 
-Website for CR Maskiner - dansk maskinforhandler i Sorø. Viser nye & brugte entreprenørmaskiner hentet fra ekstern HTML-feed.
+Website for Rold Maskinhandel - maskinhandler i Nordjylland (Rold/Arden). Køb, salg, udlejning og reparation af brugte maskiner. Maskindata hentes fra ekstern HTML-feed.
 
 ## Tech Stack
 
@@ -24,7 +24,7 @@ npm run db:push      # Push Drizzle schema til database
 ```
 client/              # React frontend
   src/
-    pages/           # Sider: Home, Machines, MachineDetail, About, Contact
+    pages/           # Sider: Home, Machines, MachineDetail
     components/      # Header, Footer, MachineSlider + ui/ (shadcn)
     hooks/           # use-mobile, use-toast
     lib/             # queryClient, utils
@@ -50,8 +50,13 @@ script/
 - `/` - Forside
 - `/maskiner` - Maskinoversigt med filtrering
 - `/maskine/:id` - Maskindetaljer
-- `/om-os` - Om virksomheden
-- `/kontakt` - Kontaktside
+
+## Branding
+
+- **Farver**: `#3B404B` (mørk grå, primær) + `#FFD942` (gul, accent)
+- **Kontakt**: +45 25 15 94 95 / info@roldmaskinhandel.dk
+- **Adresse**: Haverslevvej 12, Rold, 9510 Arden
+- **CVR**: 38742108
 
 ## Environment Variables
 

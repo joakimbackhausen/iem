@@ -73,11 +73,13 @@ export default function MachineSlider({ machines }: { machines: Machine[] }) {
                       Ingen billede
                     </div>
                   )}
-                  <div className="absolute top-3 left-3">
-                    <span className="bg-white/95 backdrop-blur text-xs font-medium px-2 py-1 rounded text-foreground">
-                      {machine.year}
-                    </span>
-                  </div>
+                  {machine.year && machine.year !== 'Årgang ukendt' && (
+                    <div className="absolute top-3 left-3">
+                      <span className="bg-white/95 backdrop-blur text-xs font-medium px-2 py-1 rounded text-foreground">
+                        {machine.year}
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <div className="p-4">
                   <div className="mb-2">

@@ -107,7 +107,7 @@ export default function MachineDetail() {
         const found = data.find((m: Machine) => m.id.toString() === params.id);
         if (found) {
           setMachine(found);
-          document.title = `${found.brand} ${found.model} - CR Maskiner`;
+          document.title = `${found.brand} ${found.model} - Rold Maskinhandel`;
         } else {
           setError('Maskinen blev ikke fundet');
         }
@@ -137,7 +137,7 @@ export default function MachineDetail() {
       <div className="min-h-screen flex flex-col bg-[#f5f5f5]">
         <Header />
         <main className="flex-1 flex items-center justify-center pt-[72px]">
-          <Loader2 className="w-10 h-10 animate-spin text-[#1a7a3a]" />
+          <Loader2 className="w-10 h-10 animate-spin text-[#FFD942]" />
         </main>
         <Footer />
       </div>
@@ -152,7 +152,7 @@ export default function MachineDetail() {
           <p className="text-xl text-gray-500">{error || 'Maskinen blev ikke fundet'}</p>
           <Link
             href="/maskiner"
-            className="inline-flex items-center gap-2 text-[#1a7a3a] font-medium hover:underline"
+            className="inline-flex items-center gap-2 text-[#3B404B] font-medium hover:underline"
           >
             <ArrowLeft className="w-4 h-4" />
             Tilbage til maskiner
@@ -235,7 +235,7 @@ export default function MachineDetail() {
                       onClick={() => setCurrentImageIndex(index)}
                       className={`flex-shrink-0 w-[72px] h-[72px] rounded-xl overflow-hidden border-2 transition-all ${
                         index === currentImageIndex
-                          ? 'border-[#1a7a3a] shadow-md'
+                          ? 'border-[#FFD942] shadow-md'
                           : 'border-transparent opacity-70 hover:opacity-100'
                       }`}
                     >
@@ -255,7 +255,7 @@ export default function MachineDetail() {
               {/* Title & Category */}
               <div>
                 {categoryPath && (
-                  <p className="text-[13px] text-[#1a7a3a] font-semibold tracking-wide uppercase mb-2">
+                  <p className="text-[13px] text-[#3B404B] font-semibold tracking-wide uppercase mb-2">
                     {categoryPath}
                   </p>
                 )}
@@ -286,7 +286,7 @@ export default function MachineDetail() {
                 <div className="text-[13px] text-gray-400 font-medium uppercase tracking-wide mb-1">
                   Pris ekskl. moms
                 </div>
-                <div className="font-serif text-[36px] text-[#1a7a3a] leading-tight mb-1">
+                <div className="font-serif text-[36px] text-[#3B404B] leading-tight mb-1">
                   {machine.price && !isNaN(parseInt(machine.price, 10))
                     ? `${formatPrice(machine.price)} ${machine.currency || 'DKK'}`
                     : 'Ring for pris'}
@@ -304,14 +304,14 @@ export default function MachineDetail() {
                   Kontakt os om denne maskine
                 </h2>
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <a href="tel:+4522232269" className="flex-1">
-                    <button className="w-full inline-flex items-center justify-center gap-2 bg-[#1a7a3a] text-white text-[14px] font-semibold px-6 py-3 rounded-full hover:bg-[#14632e] transition-colors">
+                  <a href="tel:+4525159495" className="flex-1">
+                    <button className="w-full inline-flex items-center justify-center gap-2 bg-[#FFD942] text-[#3B404B] text-[14px] font-semibold px-6 py-3 rounded-full hover:bg-[#f5cd2e] transition-colors">
                       <Phone className="w-4 h-4" />
-                      Ring: 22 23 22 69
+                      Ring: 25 15 94 95
                     </button>
                   </a>
                   <a
-                    href={`mailto:crmaskiner@gmail.com?subject=Forespørgsel: ${machine.brand} ${machine.model} (ID: ${machine.id})&body=Hej,%0D%0A%0D%0AJeg er interesseret i følgende maskine:%0D%0A%0D%0A${machine.brand} ${machine.model}%0D%0APris: ${formatPrice(machine.price)} ${machine.currency}%0D%0AID: ${machine.id}%0D%0A%0D%0AMed venlig hilsen`}
+                    href={`mailto:info@roldmaskinhandel.dk?subject=Forespørgsel: ${machine.brand} ${machine.model} (ID: ${machine.id})&body=Hej,%0D%0A%0D%0AJeg er interesseret i følgende maskine:%0D%0A%0D%0A${machine.brand} ${machine.model}%0D%0APris: ${formatPrice(machine.price)} ${machine.currency}%0D%0AID: ${machine.id}%0D%0A%0D%0AMed venlig hilsen`}
                     className="flex-1"
                   >
                     <button className="w-full inline-flex items-center justify-center gap-2 border-2 border-gray-200 text-[#1a1a1a] text-[14px] font-semibold px-6 py-3 rounded-full hover:bg-gray-50 transition-colors">
@@ -321,7 +321,7 @@ export default function MachineDetail() {
                   </a>
                 </div>
                 <p className="text-[13px] text-gray-400 mt-4 text-center">
-                  Kontaktperson: {machine.contact || 'Claus'} · Åben efter aftale
+                  Kontaktperson: {machine.contact || 'Mads Kroon Uldall Juhl'} · Man-Søn 09:00-17:00
                 </p>
               </div>
 
@@ -330,7 +330,7 @@ export default function MachineDetail() {
                   href={machine.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-[#1a7a3a] hover:underline text-[14px] font-medium"
+                  className="inline-flex items-center gap-2 text-[#3B404B] hover:underline text-[14px] font-medium"
                 >
                   <ExternalLink className="w-4 h-4" />
                   Se annonce på altimaskiner.dk
@@ -427,11 +427,11 @@ export default function MachineDetail() {
                 Yderligere oplysninger
               </h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                <SpecItem label="Forhandler" value="CR Maskiner" />
-                <SpecItem label="Kontaktperson" value={machine.contact || 'Claus'} />
-                <SpecItem label="Adresse" value={machine.address || 'Nordmarksvej 2, 4180 Sorø'} />
-                <SpecItem label="Telefon" value="22 23 22 69" />
-                <SpecItem label="Email" value="crmaskiner@gmail.com" />
+                <SpecItem label="Forhandler" value="Rold Maskinhandel" />
+                <SpecItem label="Kontaktperson" value={machine.contact || 'Mads Kroon Uldall Juhl'} />
+                <SpecItem label="Adresse" value={machine.address || 'Haverslevvej 12, Rold, 9510 Arden'} />
+                <SpecItem label="Telefon" value="25 15 94 95" />
+                <SpecItem label="Email" value="info@roldmaskinhandel.dk" />
               </div>
             </div>
           </div>

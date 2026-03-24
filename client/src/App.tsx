@@ -13,12 +13,6 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/maskiner" component={Machines} />
       <Route path="/maskine/:id" component={MachineDetail} />
-      {/* All other menu links redirect to Home */}
-      <Route path="/solis-traktor" component={Home} />
-      <Route path="/trailer" component={Home} />
-      <Route path="/finansiering" component={Home} />
-      <Route path="/om-os" component={Home} />
-      <Route path="/kontakt" component={Home} />
       <Route component={Home} />
     </Switch>
   );

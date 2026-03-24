@@ -4,9 +4,6 @@ import { Menu, X, Phone, Mail } from 'lucide-react';
 
 const navLinks = [
   { label: 'Maskiner', href: '/maskiner' },
-  { label: 'Solis Traktor', href: '/solis-traktor' },
-  { label: 'Trailer', href: '/trailer' },
-  { label: 'Finansiering', href: '/finansiering' },
   { label: 'Om os', href: '/om-os' },
   { label: 'Kontakt', href: '/kontakt' },
 ];
@@ -37,9 +34,9 @@ export default function Header() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3">
             <img
-              src="/cr-logo.png"
-              alt="CR Maskiner"
-              className="h-12 w-auto"
+              src={solid ? '/rold-logo.png' : '/rold-logo-white.png'}
+              alt="Rold Maskinhandel"
+              className="h-10 w-auto transition-opacity"
             />
           </Link>
 
@@ -52,8 +49,8 @@ export default function Header() {
                 className={`px-4 py-2 text-[14px] font-medium rounded-full transition-all duration-200 ${
                   solid
                     ? location === link.href
-                      ? 'text-[#111] bg-[#111]/5'
-                      : 'text-[#555] hover:text-[#111] hover:bg-[#111]/5'
+                      ? 'text-[#3B404B] bg-[#3B404B]/5'
+                      : 'text-[#555] hover:text-[#3B404B] hover:bg-[#3B404B]/5'
                     : location === link.href
                       ? 'text-white bg-white/15'
                       : 'text-white/80 hover:text-white hover:bg-white/10'
@@ -67,17 +64,17 @@ export default function Header() {
           {/* Right: phone + CTA */}
           <div className="hidden lg:flex items-center gap-4">
             <a
-              href="tel:+4522232269"
+              href="tel:+4525159495"
               className={`flex items-center gap-2 text-[14px] font-medium transition-colors ${
-                solid ? 'text-[#555] hover:text-[#111]' : 'text-white/80 hover:text-white'
+                solid ? 'text-[#555] hover:text-[#3B404B]' : 'text-white/80 hover:text-white'
               }`}
             >
               <Phone className="w-4 h-4" />
-              22 23 22 69
+              25 15 94 95
             </a>
             <Link
               href="/kontakt"
-              className="bg-[#1a7a3a] text-white text-[14px] font-semibold px-6 py-2.5 rounded-full hover:bg-[#14632e] transition-colors"
+              className="bg-[#FFD942] text-[#3B404B] text-[14px] font-semibold px-6 py-2.5 rounded-full hover:bg-[#f5cd2e] transition-colors"
             >
               Kontakt os
             </Link>
@@ -86,7 +83,7 @@ export default function Header() {
           {/* Mobile toggle */}
           <button
             className={`lg:hidden p-2 rounded-lg transition-colors ${
-              solid ? 'text-[#111]' : 'text-white'
+              solid ? 'text-[#3B404B]' : 'text-white'
             }`}
             onClick={() => setMobileOpen(!mobileOpen)}
           >
@@ -105,7 +102,7 @@ export default function Header() {
                 href={link.href}
                 className={`block px-4 py-3 text-[15px] font-medium rounded-xl transition-colors ${
                   location === link.href
-                    ? 'text-[#1a7a3a] bg-[#1a7a3a]/5'
+                    ? 'text-[#3B404B] bg-[#FFD942]/10'
                     : 'text-[#333] hover:bg-gray-50'
                 }`}
                 onClick={() => setMobileOpen(false)}
@@ -114,11 +111,11 @@ export default function Header() {
               </Link>
             ))}
             <div className="pt-3 mt-3 border-t border-gray-100 space-y-2">
-              <a href="tel:+4522232269" className="flex items-center gap-3 px-4 py-3 text-[15px] text-[#333]">
-                <Phone className="w-4 h-4 text-[#1a7a3a]" /> +45 22 23 22 69
+              <a href="tel:+4525159495" className="flex items-center gap-3 px-4 py-3 text-[15px] text-[#333]">
+                <Phone className="w-4 h-4 text-[#FFD942]" /> +45 25 15 94 95
               </a>
-              <a href="mailto:crmaskiner@gmail.com" className="flex items-center gap-3 px-4 py-3 text-[15px] text-[#333]">
-                <Mail className="w-4 h-4 text-[#1a7a3a]" /> crmaskiner@gmail.com
+              <a href="mailto:info@roldmaskinhandel.dk" className="flex items-center gap-3 px-4 py-3 text-[15px] text-[#333]">
+                <Mail className="w-4 h-4 text-[#FFD942]" /> info@roldmaskinhandel.dk
               </a>
             </div>
           </nav>

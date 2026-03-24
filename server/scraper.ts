@@ -1,6 +1,6 @@
 import * as cheerio from "cheerio";
 
-const FEED_BASE = "https://altimaskiner.dk/feed/1066/html";
+const FEED_BASE = "https://altimaskiner.dk/feed/1326/html";
 
 const CATEGORY_NAMES: Record<string, string> = {
   entreprenoermaskiner: "Entreprenørmaskiner",
@@ -165,7 +165,7 @@ function listItemToMachine(item: ListItem): Machine {
     id: item.adId,
     ad_id: item.adId,
     sku: item.adId,
-    company_id: "1066",
+    company_id: "1326",
     title: item.title,
     model: item.title,
     brand: "",
@@ -224,7 +224,7 @@ async function refreshCache(): Promise<void> {
           id: item.adId,
           ad_id: item.adId,
           sku: item.adId,
-          company_id: "1066",
+          company_id: "1326",
           title: item.title,
           model: detail.model || item.title,
           brand: detail.brand || "",
