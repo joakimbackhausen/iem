@@ -1,383 +1,250 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'wouter';
-import { Loader2, ArrowRight, Phone, ChevronRight, Recycle, Leaf, BadgePercent, Wrench, ShoppingCart, Truck, Quote } from 'lucide-react';
+import { Loader2, ArrowRight, Phone, ChevronRight, ArrowUpRight } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import MachineSlider from '@/components/MachineSlider';
 
 interface Machine {
-  id: number;
-  title: string;
-  model: string;
-  brand: string;
-  year: string;
-  price: string;
-  currency: string;
-  url: string;
+  id: number; title: string; model: string; brand: string; year: string;
+  price: string; currency: string; url: string;
   pictures: { url: string; date: string }[];
   category: { id: string; name: string }[];
   description: string;
 }
 
-/* ── Services ──────────────────────────────────── */
-const services = [
-  {
-    title: 'Vi sælger maskiner',
-    desc: 'Stort udvalg af brugte kvalitetsmaskiner til fornuftige priser',
-    icon: ShoppingCart,
-    href: '/maskiner',
-  },
-  {
-    title: 'Vi køber din maskine',
-    desc: 'Vi køber brugte maskiner — kontakt os for et tilbud',
-    icon: Truck,
-    href: '/kontakt',
-  },
-  {
-    title: 'Vi reparerer',
-    desc: 'Service og reparation af maskiner i vores værksted',
-    icon: Wrench,
-    href: '/kontakt',
-  },
-];
+function formatPrice(price: string): string {
+  const num = parseInt(price, 10);
+  if (isNaN(num) || num === 0) return 'Ring for pris';
+  return num.toLocaleString('da-DK') + ' kr';
+}
 
-/* ── Core values ──────────────────────────────── */
-const values = [
-  { title: 'Genbrug', desc: 'Vi giver maskiner nyt liv — godt for miljøet og din økonomi', icon: Recycle },
-  { title: 'Bæredygtighed', desc: 'Genbrug af maskiner er en af de mest bæredygtige løsninger', icon: Leaf },
-  { title: 'Fornuftige priser', desc: 'Kvalitet og pris hænger sammen — vi forhandler altid fair', icon: BadgePercent },
-];
+function Reveal({ children, className = '', delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [v, setV] = useState(false);
+  useEffect(() => {
+    const el = ref.current; if (!el) return;
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setV(true); }, { threshold: 0.08 });
+    obs.observe(el); return () => obs.disconnect();
+  }, []);
+  return (
+    <div ref={ref} className={`transition-all duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${v ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'} ${className}`} style={{ transitionDelay: `${delay}ms` }}>
+      {children}
+    </div>
+  );
+}
 
-/* ── Testimonials ─────────────────────────────── */
-const testimonials = [
-  {
-    name: 'Knud',
-    role: 'Anlægsgartner',
-    text: 'Fantastisk service og et godt udvalg af maskiner. Fandt præcis den minigraver jeg ledte efter til en fair pris.',
-  },
-  {
-    name: 'Tom',
-    role: 'Murer',
-    text: 'Har handlet med Rold Maskinhandel flere gange. De finder altid det rigtige udstyr og er ærlige omkring maskinernes stand.',
-  },
-  {
-    name: 'Andreas',
-    role: 'Skovejer',
-    text: 'God rådgivning og hurtig levering. Maskinerne var i bedre stand end forventet. Kan klart anbefales.',
-  },
-];
-
-/* ══════════════════════════════════════════════════
-   HOME
-   ══════════════════════════════════════════════════ */
 export default function Home() {
   const [machines, setMachines] = useState<Machine[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    document.title = 'Rold Maskinhandel — Køb, salg & udlejning af brugte maskiner i Nordjylland';
-  }, []);
+  useEffect(() => { document.title = 'Ib E. Mortensen A/S — Maskinhandler siden 1967'; }, []);
 
   useEffect(() => {
-    async function fetchMachines() {
+    (async () => {
       try {
         const res = await fetch('/api/machines');
-        if (!res.ok) throw new Error('fetch failed');
         const data = await res.json();
         if (Array.isArray(data)) setMachines([...data].sort((a, b) => b.id - a.id));
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchMachines();
+      } catch (e) { console.error(e); }
+      finally { setLoading(false); }
+    })();
   }, []);
 
+  const heroCategories = [
+    { title: 'Entreprenørmaskiner', desc: 'Minigravere, hjullæssere og meget mere', image: '/images/minigraver.jpg', href: '/maskiner/entreprenoermaskiner' },
+    { title: 'Brugte maskiner', desc: 'Over 50 maskiner på lager — klar til levering', image: machines[0]?.pictures?.[0]?.url || '/images/hero.jpg', href: '/maskiner' },
+    { title: 'Service & reservedele', desc: 'Eget værksted med erfarne mekanikere', image: '/images/hero.jpg', href: '/' },
+  ];
+
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-white">
       <Header />
 
-      {/* ─── HERO ─── */}
-      <section className="relative min-h-[100vh] flex items-center overflow-hidden">
-        <img
-          src="/hero-forest.jpg"
-          alt=""
-          className="absolute inset-0 w-full h-full object-cover scale-105 animate-hero-zoom"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#3B404B]/90 via-[#3B404B]/70 to-[#3B404B]/40" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#3B404B]/80 via-transparent to-[#3B404B]/30" />
+      {/* ═══ HERO ═══ */}
+      <section className="relative">
+        <div className="relative min-h-[85vh] flex items-center justify-center overflow-hidden">
+          <img src="/images/hero.jpg" alt="" className="absolute inset-0 w-full h-full object-cover scale-[1.01]" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/35 to-black/15" />
 
-        <div className="relative z-10 max-w-[1360px] mx-auto px-5 sm:px-8 w-full">
-          <div className="max-w-2xl">
-            {/* Yellow accent line */}
-            <div className="w-16 h-1 bg-[#FFD942] mb-8 animate-fade-in" />
-
-            <p className="text-[#FFD942] text-[14px] sm:text-[15px] font-semibold tracking-[0.2em] uppercase mb-4 animate-fade-in">
-              Din maskinhandler i Nordjylland
+          <div className="relative z-10 text-center max-w-4xl mx-auto px-6 pt-[100px] pb-32">
+            <p className="text-[#FFF100] text-[14px] font-medium tracking-[0.25em] uppercase mb-6 animate-fade-in">
+              Din maskinhandler i Kastbjerg
             </p>
-            <h1 className="font-serif text-[48px] sm:text-[64px] lg:text-[84px] text-white leading-[0.95] mb-6 animate-fade-in-up">
-              Køb, salg &amp;
-              <br />
-              <span className="text-[#FFD942]">udlejning</span>
+            <h1 className="text-white text-[48px] sm:text-[64px] lg:text-[80px] font-bold leading-[1.05] mb-8 animate-fade-in-up">
+              Nye & brugte
+              <br />kvalitetsmaskiner
             </h1>
-            <p className="text-white/60 text-[17px] sm:text-[19px] leading-relaxed max-w-lg mb-10 animate-fade-in-up-delay">
-              Brugte kvalitetsmaskiner til fornuftige priser. Genbrug og bæredygtighed i fokus.
-            </p>
-            <div className="flex flex-wrap items-center gap-4 mb-16 animate-fade-in-up-delay">
-              <Link
-                href="/maskiner"
-                className="inline-flex items-center gap-2 bg-[#FFD942] text-[#3B404B] text-[15px] font-bold px-8 py-4 rounded-full hover:bg-[#f5cd2e] hover:scale-105 transition-all duration-200 shadow-lg shadow-[#FFD942]/20"
-              >
-                Se maskiner
-                <ArrowRight className="w-4 h-4" />
+            <div className="flex flex-wrap justify-center gap-3 animate-fade-in-up-delay">
+              <Link href="/maskiner"
+                className="group inline-flex items-center gap-2.5 bg-[#1B6B4A] text-white text-[16px] font-semibold px-10 py-4.5 rounded-lg hover:bg-[#155d3f] transition-all duration-300 shadow-[0_4px_20px_rgba(27,107,74,0.3)]">
+                Se maskiner på lager <ArrowRight className="w-4.5 h-4.5 group-hover:translate-x-1 transition-transform duration-300" />
               </Link>
-              <a
-                href="tel:+4525159495"
-                className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white text-[15px] font-semibold px-8 py-4 rounded-full border border-white/20 hover:bg-white/20 hover:scale-105 transition-all duration-200"
-              >
-                <Phone className="w-4 h-4" />
-                +45 25 15 94 95
+              <a href="tel:+4586470388"
+                className="inline-flex items-center gap-2.5 bg-white/[0.08] backdrop-blur-md text-white text-[16px] font-semibold px-10 py-4.5 rounded-lg border border-white/[0.15] hover:bg-white/[0.15] transition-all duration-300">
+                <Phone className="w-4.5 h-4.5" /> Ring til os
               </a>
             </div>
+          </div>
+        </div>
+        <div className="absolute bottom-0 left-0 right-0 h-44 bg-gradient-to-t from-white via-white/90 to-transparent z-10" />
+      </section>
 
-            {/* USP cards */}
-            <div className="grid grid-cols-3 gap-4 animate-fade-in-up-delay max-w-xl">
-              {[
-                { icon: Recycle, label: 'Genbrug', text: 'Bæredygtigt valg' },
-                { icon: BadgePercent, label: 'Fair priser', text: 'Altid til forhandling' },
-                { icon: Wrench, label: 'Værksted', text: 'Service & reparation' },
-              ].map((usp) => (
-                <div
-                  key={usp.label}
-                  className="group relative bg-white/[0.07] backdrop-blur-md border border-white/[0.08] rounded-2xl px-4 py-5 text-center hover:bg-white/[0.12] hover:border-[#FFD942]/30 transition-all duration-300"
-                >
-                  <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#FFD942]/15 mb-3 group-hover:bg-[#FFD942]/25 transition-colors">
-                    <usp.icon className="w-5 h-5 text-[#FFD942]" />
+      {/* ═══ CATEGORIES ═══ */}
+      <section className="pt-6 pb-20 lg:pb-28">
+        <div className="max-w-[1400px] mx-auto px-5 sm:px-6">
+          <Reveal>
+            <div className="mb-10">
+              <p className="text-[#1B6B4A] text-[13px] font-semibold tracking-[0.2em] uppercase mb-2">Kategorier</p>
+              <h2 className="text-[32px] lg:text-[40px] font-bold text-[#1a1a1a]">Udforsk vores sortiment</h2>
+            </div>
+          </Reveal>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {heroCategories.map((cat, i) => (
+              <Reveal key={cat.title} delay={i * 100}>
+                <Link href={cat.href} className="group relative aspect-[16/11] rounded-xl overflow-hidden block">
+                  <img src={cat.image} alt={cat.title} className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-[800ms] ease-out" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent group-hover:from-black/85 transition-all duration-500" />
+                  <div className="absolute bottom-0 left-0 right-0 p-6">
+                    <p className="text-white/40 text-[12px] font-medium tracking-[0.15em] uppercase mb-2">Kategori</p>
+                    <p className="text-white font-bold text-[24px] leading-tight mb-1">{cat.title}</p>
+                    <p className="text-white/40 text-[14px]">{cat.desc}</p>
                   </div>
-                  <p className="text-white font-semibold text-[14px] leading-tight">{usp.label}</p>
-                  <p className="text-white/40 text-[12px] mt-0.5">{usp.text}</p>
-                </div>
+                  <div className="absolute top-5 right-5 w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-300">
+                    <ArrowUpRight className="w-4.5 h-4.5 text-white" />
+                  </div>
+                </Link>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ SENESTE MASKINER ═══ */}
+      <section className="py-20 lg:py-28 bg-[#F5F5F3]">
+        <div className="max-w-[1400px] mx-auto px-5 sm:px-6">
+          <Reveal>
+            <div className="flex items-end justify-between mb-10">
+              <div>
+                <p className="text-[#1B6B4A] text-[13px] font-semibold tracking-[0.2em] uppercase mb-2">På lager nu</p>
+                <h2 className="text-[32px] lg:text-[40px] font-bold text-[#1a1a1a]">Seneste maskiner</h2>
+              </div>
+              <Link href="/maskiner" className="text-[15px] font-medium text-[#1B6B4A] hover:text-[#155d3f] flex items-center gap-1.5 transition-colors group">
+                Se alle <ChevronRight className="w-4.5 h-4.5 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+            </div>
+          </Reveal>
+          {loading ? (
+            <div className="flex justify-center py-20"><Loader2 className="w-5 h-5 animate-spin text-gray-300" /></div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              {machines.slice(0, 8).map((m, i) => (
+                <Reveal key={m.id} delay={i * 50}>
+                  <Link href={`/maskine/${m.id}`} className="group block">
+                    <div className="bg-white rounded-xl overflow-hidden hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-500">
+                      <div className="aspect-[4/3] relative overflow-hidden">
+                        {m.pictures?.[0]?.url ? (
+                          <img src={m.pictures[0].url} alt={m.title} className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-[800ms] ease-out" loading="lazy" />
+                        ) : <div className="w-full h-full bg-gray-100" />}
+                      </div>
+                      <div className="p-4">
+                        <p className="text-[11px] text-[#1B6B4A] font-semibold tracking-[0.1em] uppercase mb-1.5">{m.brand}</p>
+                        <h3 className="text-[16px] font-semibold text-[#1a1a1a] leading-snug mb-3 line-clamp-2">{m.title}</h3>
+                        <div className="flex items-end justify-between pt-3 border-t border-gray-100">
+                          <div>
+                            <p className="text-[19px] font-bold text-[#1a1a1a] tracking-tight">{formatPrice(m.price)}</p>
+                            <p className="text-[11px] text-gray-400 mt-0.5">ekskl. moms</p>
+                          </div>
+                          <span className="text-[13px] font-medium text-[#1B6B4A] opacity-0 group-hover:opacity-100 transition-opacity duration-300">Se mere →</span>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                </Reveal>
               ))}
             </div>
-          </div>
-        </div>
-
-        {/* Diagonal cut bottom */}
-        <div className="absolute bottom-0 left-0 right-0">
-          <svg viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full" preserveAspectRatio="none">
-            <path d="M0 80H1440V20L0 80Z" fill="white" />
-          </svg>
-        </div>
-      </section>
-
-      {/* ─── SERVICES ─── */}
-      <section className="py-16 lg:py-24 bg-white">
-        <div className="max-w-[1360px] mx-auto px-5 sm:px-8">
-          <div className="text-center mb-12">
-            <p className="text-[#FFD942] text-[13px] font-semibold tracking-[0.15em] uppercase mb-2">
-              Hvad vi tilbyder
-            </p>
-            <h2 className="font-serif text-[32px] lg:text-[40px] text-[#3B404B] leading-tight">
-              Køb, salg &amp; udlejning
-            </h2>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {services.map((svc) => (
-              <Link
-                key={svc.title}
-                href={svc.href}
-                className="group relative bg-[#f8f8f8] rounded-2xl p-8 hover:bg-[#3B404B] transition-colors duration-300"
-              >
-                <svc.icon className="w-10 h-10 text-[#FFD942] mb-5" />
-                <h3 className="text-[20px] font-semibold text-[#3B404B] group-hover:text-white mb-2 transition-colors">
-                  {svc.title}
-                </h3>
-                <p className="text-[#666] group-hover:text-white/60 text-[15px] leading-relaxed transition-colors">
-                  {svc.desc}
-                </p>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ─── MACHINES ─── */}
-      <section className="py-16 lg:py-24 bg-[#f5f5f5]">
-        <div className="max-w-[1360px] mx-auto px-5 sm:px-8">
-          <div className="flex items-end justify-between mb-10">
-            <div>
-              <p className="text-[#FFD942] text-[13px] font-semibold tracking-[0.15em] uppercase mb-2">
-                På lager nu
-              </p>
-              <h2 className="font-serif text-[32px] lg:text-[40px] text-[#3B404B] leading-tight">
-                Seneste maskiner
-              </h2>
-            </div>
-            <Link
-              href="/maskiner"
-              className="hidden sm:inline-flex items-center gap-1.5 text-[#3B404B] text-[14px] font-semibold hover:underline"
-            >
-              Se alle <ChevronRight className="w-4 h-4" />
-            </Link>
-          </div>
-
-          {loading ? (
-            <div className="flex justify-center py-20">
-              <Loader2 className="w-8 h-8 animate-spin text-[#FFD942]" />
-            </div>
-          ) : (
-            <MachineSlider machines={machines} />
           )}
+        </div>
+      </section>
 
-          <div className="sm:hidden mt-8 text-center">
-            <Link
-              href="/maskiner"
-              className="inline-flex items-center gap-1 text-[#3B404B] font-semibold text-[15px]"
-            >
-              Se alle maskiner <ArrowRight className="w-4 h-4" />
-            </Link>
+      {/* ═══ STATS ═══ */}
+      <section className="py-20 lg:py-24 bg-white">
+        <div className="max-w-[1400px] mx-auto px-5 sm:px-6">
+          <div className="flex flex-wrap justify-center gap-16 lg:gap-32">
+            {[
+              { value: `${machines.length || 57}+`, label: 'Maskiner på lager' },
+              { value: '55+', label: 'Års erfaring' },
+              { value: '100%', label: 'Finansiering muligt' },
+            ].map((s, i) => (
+              <Reveal key={s.label} delay={i * 120}>
+                <div className="text-center">
+                  <p className="text-[#1B6B4A] text-[56px] lg:text-[72px] font-bold leading-none">{s.value}</p>
+                  <p className="text-gray-400 text-[14px] font-medium mt-3 tracking-wide">{s.label}</p>
+                </div>
+              </Reveal>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* ─── ABOUT PREVIEW ─── Image left, text right */}
-      <section className="py-16 lg:py-24 bg-white">
-        <div className="max-w-[1360px] mx-auto px-5 sm:px-8">
+      {/* ═══ OM OS ═══ */}
+      <section className="py-20 lg:py-28 bg-[#F5F5F3]">
+        <div className="max-w-[1400px] mx-auto px-5 sm:px-6">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-            <div className="relative">
-              <div className="aspect-[4/3] rounded-2xl overflow-hidden">
-                <img
-                  src="/hero-forest.jpg"
-                  alt="Rold Maskinhandel i arbejde"
-                  className="w-full h-full object-cover"
-                />
+            <Reveal>
+              <div className="aspect-[4/3] rounded-xl overflow-hidden">
+                <img src="/images/hero.jpg" alt="IEM Kastbjerg" className="w-full h-full object-cover" />
               </div>
-              {/* Accent block */}
-              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-[#FFD942] rounded-2xl -z-10 hidden lg:block" />
-            </div>
-            <div>
-              <div className="w-12 h-1 bg-[#FFD942] mb-6" />
-              <p className="text-[#FFD942] text-[13px] font-semibold tracking-[0.15em] uppercase mb-3">
-                Om Rold Maskinhandel
-              </p>
-              <h2 className="font-serif text-[32px] lg:text-[40px] text-[#3B404B] leading-tight mb-6">
-                Din maskinhandler i Nordjylland
-              </h2>
-              <p className="text-[#666] text-[16px] leading-relaxed mb-4">
-                Rold Maskinhandel handler med brugte maskiner fra vores base i Rold ved Arden.
-                Vi køber, sælger, udlejer og reparerer maskiner af alle typer — fra
-                entreprenørmaskiner til landbrugsmaskiner og meget mere.
-              </p>
-              <p className="text-[#666] text-[16px] leading-relaxed mb-8">
-                Kvalitet og pris hænger sammen hos os. Vi sælger kun maskiner vi kan stå inde
-                for, og vi forhandler altid en fair pris. Genbrug og bæredygtighed er kernen
-                i det vi laver.
-              </p>
-
-              {/* Team */}
-              <div className="flex items-center gap-6">
-                <div className="flex items-center gap-3">
-                  <img src="/mads.jpg" alt="Mads" className="w-12 h-12 rounded-full object-cover" />
-                  <div>
-                    <p className="font-semibold text-[14px] text-[#3B404B]">Mads Kroon</p>
-                    <p className="text-[12px] text-[#999]">Direktør</p>
-                  </div>
-                </div>
-                <div className="w-px h-10 bg-gray-200" />
-                <div className="flex items-center gap-3">
-                  <img src="/thomas.jpg" alt="Thomas" className="w-12 h-12 rounded-full object-cover" />
-                  <div>
-                    <p className="font-semibold text-[14px] text-[#3B404B]">Thomas Uldall</p>
-                    <p className="text-[12px] text-[#999]">Direktør</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── CORE VALUES ─── */}
-      <section className="py-16 lg:py-24 bg-white">
-        <div className="max-w-[1360px] mx-auto px-5 sm:px-8">
-          <div className="text-center mb-12">
-            <p className="text-[#FFD942] text-[13px] font-semibold tracking-[0.15em] uppercase mb-2">
-              Vores kerneværdier
-            </p>
-            <h2 className="font-serif text-[32px] lg:text-[40px] text-[#3B404B] leading-tight">
-              Det vi tror på
-            </h2>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
-            {values.map((val) => (
-              <div key={val.title} className="text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#FFD942]/10 mb-5">
-                  <val.icon className="w-7 h-7 text-[#FFD942]" />
-                </div>
-                <h3 className="text-[20px] font-semibold text-[#3B404B] mb-2">{val.title}</h3>
-                <p className="text-[#666] text-[15px] leading-relaxed">{val.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ─── TESTIMONIALS ─── */}
-      <section className="py-16 lg:py-24 bg-[#f5f5f5]">
-        <div className="max-w-[1360px] mx-auto px-5 sm:px-8">
-          <div className="text-center mb-12">
-            <p className="text-[#FFD942] text-[13px] font-semibold tracking-[0.15em] uppercase mb-2">
-              Kundeudtalelser
-            </p>
-            <h2 className="font-serif text-[32px] lg:text-[40px] text-[#3B404B] leading-tight">
-              Det siger kunderne
-            </h2>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {testimonials.map((t) => (
-              <div key={t.name} className="bg-white rounded-2xl p-8">
-                <Quote className="w-8 h-8 text-[#FFD942]/30 mb-4" />
-                <p className="text-[#555] text-[15px] leading-relaxed mb-6">
-                  {t.text}
+            </Reveal>
+            <Reveal delay={150}>
+              <div>
+                <p className="text-[#1B6B4A] text-[13px] font-semibold tracking-[0.2em] uppercase mb-3">Om Ib E. Mortensen A/S</p>
+                <h2 className="text-[32px] lg:text-[40px] font-bold text-[#1a1a1a] mb-6 leading-tight">
+                  Mere end 55 års erfaring<br />med maskiner
+                </h2>
+                <p className="text-[17px] text-gray-500 leading-[1.8] mb-4">
+                  Vi har altid over 50 maskiner på lager klar til omgående levering. Udover brugte maskiner er vi autoriseret forhandler af Eurocomach, Neomach og Venieri.
                 </p>
-                <div>
-                  <p className="font-semibold text-[#3B404B]">{t.name}</p>
-                  <p className="text-[13px] text-[#999]">{t.role}</p>
+                <p className="text-[17px] text-gray-500 leading-[1.8] mb-10">
+                  Vi tilbyder finansiering og leasing på alle vores maskiner i samarbejde med Spar Nord Leasing. Ring for fremvisning.
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  <a href="tel:+4586470388"
+                    className="inline-flex items-center gap-2.5 bg-[#1B6B4A] text-white text-[16px] font-semibold px-8 py-4 rounded-lg hover:bg-[#155d3f] transition-all duration-300">
+                    <Phone className="w-4.5 h-4.5" /> Ring til os
+                  </a>
+                  <Link href="/maskiner"
+                    className="inline-flex items-center gap-2.5 border border-gray-200 text-[#1a1a1a] text-[16px] font-semibold px-8 py-4 rounded-lg hover:bg-white hover:border-gray-300 transition-all duration-300">
+                    Se maskiner <ArrowRight className="w-4.5 h-4.5" />
+                  </Link>
                 </div>
               </div>
-            ))}
+            </Reveal>
           </div>
         </div>
       </section>
 
-      {/* ─── CTA BANNER ─── */}
-      <section className="bg-[#3B404B] py-16 lg:py-20">
-        <div className="max-w-[1360px] mx-auto px-5 sm:px-8 text-center">
-          <h2 className="font-serif text-[32px] lg:text-[44px] text-white leading-tight mb-4">
-            Klar til at finde din næste maskine?
-          </h2>
-          <p className="text-white/60 text-[16px] max-w-lg mx-auto mb-8">
-            Kig forbi eller ring — vi hjælper gerne med at finde den rette maskine til dig
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Link
-              href="/maskiner"
-              className="inline-flex items-center gap-2 bg-[#FFD942] text-[#3B404B] text-[15px] font-semibold px-8 py-3.5 rounded-full hover:bg-[#f5cd2e] transition-colors"
-            >
-              Se maskiner <ArrowRight className="w-4 h-4" />
-            </Link>
-            <a
-              href="tel:+4525159495"
-              className="inline-flex items-center gap-2 border-2 border-white/30 text-white text-[15px] font-semibold px-8 py-3.5 rounded-full hover:bg-white/10 transition-colors"
-            >
-              <Phone className="w-4 h-4" />
-              +45 25 15 94 95
-            </a>
-          </div>
+      {/* ═══ CTA ═══ */}
+      <section className="py-20 lg:py-28 bg-[#141414] relative overflow-hidden">
+        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
+        <div className="max-w-[1400px] mx-auto px-5 sm:px-6 text-center relative">
+          <Reveal>
+            <h2 className="text-[34px] lg:text-[48px] font-bold text-white mb-5 leading-tight">
+              Klar til at finde din næste maskine?
+            </h2>
+            <p className="text-white/35 text-[16px] max-w-md mx-auto mb-10 leading-relaxed">
+              Kig forbi eller ring — vi hjælper gerne med at finde den rette maskine til dig
+            </p>
+            <div className="flex flex-wrap justify-center gap-3">
+              <Link href="/maskiner"
+                className="group inline-flex items-center gap-2.5 bg-[#1B6B4A] text-white text-[16px] font-semibold px-10 py-4.5 rounded-lg hover:bg-[#155d3f] transition-all duration-300 shadow-[0_4px_20px_rgba(27,107,74,0.3)]">
+                Se maskiner <ArrowRight className="w-4.5 h-4.5 group-hover:translate-x-1 transition-transform duration-300" />
+              </Link>
+              <a href="tel:+4586470388"
+                className="inline-flex items-center gap-2.5 border border-white/10 text-white text-[16px] font-semibold px-10 py-4.5 rounded-lg hover:bg-white/[0.06] transition-all duration-300">
+                <Phone className="w-4.5 h-4.5" /> +45 86 47 03 88
+              </a>
+            </div>
+          </Reveal>
         </div>
       </section>
 

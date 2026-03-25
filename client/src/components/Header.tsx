@@ -1,126 +1,106 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'wouter';
-import { Menu, X, Phone, Mail } from 'lucide-react';
+import { Menu, X, Phone, Mail, MapPin, Clock } from 'lucide-react';
 
 const navLinks = [
   { label: 'Maskiner', href: '/maskiner' },
-  { label: 'Om os', href: '/om-os' },
-  { label: 'Kontakt', href: '/kontakt' },
+  { label: 'Nye maskiner', href: '/' },
+  { label: 'Service', href: '/' },
+  { label: 'Finansiering', href: '/' },
+  { label: 'Om os', href: '/' },
+  { label: 'Kontakt', href: '/' },
 ];
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
   const [location] = useLocation();
 
-  const isHome = location === '/';
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 60);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
-  const solid = !isHome || scrolled || mobileOpen;
-
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        solid ? 'bg-white shadow-sm' : 'bg-transparent'
-      }`}
-    >
-      <div className="max-w-[1360px] mx-auto px-5 sm:px-8">
-        <div className="flex items-center justify-between h-[72px]">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-3">
-            <img
-              src={solid ? '/rold-logo.png' : '/rold-logo-white.png'}
-              alt="Rold Maskinhandel"
-              className="h-10 w-auto transition-opacity"
-            />
-          </Link>
-
-          {/* Desktop nav */}
-          <nav className="hidden lg:flex items-center gap-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`px-4 py-2 text-[14px] font-medium rounded-full transition-all duration-200 ${
-                  solid
-                    ? location === link.href
-                      ? 'text-[#3B404B] bg-[#3B404B]/5'
-                      : 'text-[#555] hover:text-[#3B404B] hover:bg-[#3B404B]/5'
-                    : location === link.href
-                      ? 'text-white bg-white/15'
-                      : 'text-white/80 hover:text-white hover:bg-white/10'
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-
-          {/* Right: phone + CTA */}
-          <div className="hidden lg:flex items-center gap-4">
-            <a
-              href="tel:+4525159495"
-              className={`flex items-center gap-2 text-[14px] font-medium transition-colors ${
-                solid ? 'text-[#555] hover:text-[#3B404B]' : 'text-white/80 hover:text-white'
-              }`}
-            >
-              <Phone className="w-4 h-4" />
-              25 15 94 95
-            </a>
-            <Link
-              href="/kontakt"
-              className="bg-[#FFD942] text-[#3B404B] text-[14px] font-semibold px-6 py-2.5 rounded-full hover:bg-[#f5cd2e] transition-colors"
-            >
-              Kontakt os
-            </Link>
+    <>
+      {/* ── Top bar ── */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100 hidden lg:block">
+        <div className="px-6 xl:px-10">
+          <div className="flex items-center justify-between h-11 text-[14px]">
+            <div className="flex items-center gap-7">
+              <a href="tel:+4586470388" className="flex items-center gap-2 text-[#1A1A1A] hover:text-[#1B6B4A] transition-colors">
+                <Phone className="w-4 h-4" /> +45 86 47 03 88
+              </a>
+              <a href="mailto:mail@iem.dk" className="flex items-center gap-2 text-[#1A1A1A] hover:text-[#1B6B4A] transition-colors">
+                <Mail className="w-4 h-4" /> mail@iem.dk
+              </a>
+              <span className="flex items-center gap-2 text-[#1A1A1A]/50">
+                <MapPin className="w-4 h-4" /> Vesterbro 73, 8970 Havndal
+              </span>
+            </div>
+            <div className="flex items-center gap-2 text-[#1A1A1A]/50">
+              <Clock className="w-4 h-4" /> Man-Fre 07:30-16:30
+            </div>
           </div>
-
-          {/* Mobile toggle */}
-          <button
-            className={`lg:hidden p-2 rounded-lg transition-colors ${
-              solid ? 'text-[#3B404B]' : 'text-white'
-            }`}
-            onClick={() => setMobileOpen(!mobileOpen)}
-          >
-            {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
         </div>
       </div>
 
-      {/* Mobile menu */}
-      {mobileOpen && (
-        <div className="lg:hidden bg-white border-t border-gray-100 shadow-xl">
-          <nav className="max-w-[1360px] mx-auto px-5 py-4 space-y-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`block px-4 py-3 text-[15px] font-medium rounded-xl transition-colors ${
-                  location === link.href
-                    ? 'text-[#3B404B] bg-[#FFD942]/10'
-                    : 'text-[#333] hover:bg-gray-50'
-                }`}
-                onClick={() => setMobileOpen(false)}
-              >
-                {link.label}
+      {/* ── Main header ── */}
+      <header className="fixed top-0 lg:top-11 left-0 right-0 z-50 bg-white shadow-sm">
+        <div className="px-4 sm:px-6 xl:px-10">
+          <div className="flex items-center justify-between h-[80px]">
+            <Link href="/" className="flex items-center">
+              <img src="/images/iem-logo.png" alt="IEM" className="h-16 w-auto" />
+            </Link>
+
+            <nav className="hidden lg:flex items-center gap-1">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  className={`px-5 py-2.5 text-[16px] font-medium rounded-lg transition-colors ${
+                    location === link.href && link.href !== '/'
+                      ? 'text-[#1A1A1A] bg-gray-100'
+                      : 'text-[#1A1A1A] hover:bg-gray-50'
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+
+            <div className="hidden lg:flex items-center">
+              <Link href="/"
+                className="text-[16px] font-semibold px-7 py-3.5 rounded-lg bg-[#1B6B4A] text-white hover:bg-[#155d3f] transition-all">
+                Kontakt os
               </Link>
-            ))}
-            <div className="pt-3 mt-3 border-t border-gray-100 space-y-2">
-              <a href="tel:+4525159495" className="flex items-center gap-3 px-4 py-3 text-[15px] text-[#333]">
-                <Phone className="w-4 h-4 text-[#FFD942]" /> +45 25 15 94 95
-              </a>
-              <a href="mailto:info@roldmaskinhandel.dk" className="flex items-center gap-3 px-4 py-3 text-[15px] text-[#333]">
-                <Mail className="w-4 h-4 text-[#FFD942]" /> info@roldmaskinhandel.dk
-              </a>
             </div>
-          </nav>
+
+            <button
+              className="lg:hidden p-2 text-gray-700"
+              onClick={() => setMobileOpen(!mobileOpen)}
+            >
+              {mobileOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
+            </button>
+          </div>
         </div>
-      )}
-    </header>
+
+        {mobileOpen && (
+          <div className="lg:hidden bg-white border-t border-gray-100 shadow-lg">
+            <nav className="px-5 py-4 space-y-1">
+              {navLinks.map((link) => (
+                <Link key={link.label} href={link.href}
+                  className="block px-4 py-3 text-[17px] text-[#1A1A1A] hover:bg-gray-50 rounded-lg"
+                  onClick={() => setMobileOpen(false)}>
+                  {link.label}
+                </Link>
+              ))}
+              <div className="pt-3 mt-3 border-t border-gray-100 space-y-1">
+                <a href="tel:+4586470388" className="block px-4 py-3 text-[16px] text-gray-500">
+                  <Phone className="w-4 h-4 inline mr-2" />+45 86 47 03 88
+                </a>
+                <a href="mailto:mail@iem.dk" className="block px-4 py-3 text-[16px] text-gray-500">
+                  <Mail className="w-4 h-4 inline mr-2" />mail@iem.dk
+                </a>
+              </div>
+            </nav>
+          </div>
+        )}
+      </header>
+    </>
   );
 }

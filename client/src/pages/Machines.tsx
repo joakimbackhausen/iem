@@ -1,16 +1,10 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Link } from 'wouter';
-import { Loader2, X, ChevronDown, ChevronRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Link, useParams, useLocation } from 'wouter';
+import { Loader2, X, ChevronDown, Search } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
-interface Category {
-  id: string;
-  tid: string;
-  name: string;
-}
-
+interface Category { id: string; tid: string; name: string; }
 interface Machine {
   id: number;
   title: string;
@@ -25,349 +19,125 @@ interface Machine {
   description: string;
 }
 
-interface CategoryNode {
-  id: string;
-  name: string;
-  children: CategoryNode[];
-  count: number;
-}
-
 function formatPrice(price: string): string {
   const num = parseInt(price, 10);
-  if (isNaN(num)) return price;
-  return num.toLocaleString('da-DK');
-}
-
-function buildCategoryTree(machines: Machine[]): CategoryNode[] {
-  const rootMap = new Map<string, CategoryNode>();
-  
-  machines.forEach(machine => {
-    if (!machine.category || machine.category.length === 0) return;
-    
-    let currentLevel = rootMap;
-    let parentNode: CategoryNode | null = null;
-    
-    machine.category.forEach((cat, index) => {
-      if (!currentLevel.has(cat.id)) {
-        const newNode: CategoryNode = {
-          id: cat.id,
-          name: cat.name,
-          children: [],
-          count: 0
-        };
-        currentLevel.set(cat.id, newNode);
-        if (parentNode) {
-          parentNode.children.push(newNode);
-        }
-      }
-      
-      const node = currentLevel.get(cat.id)!;
-      node.count++;
-      
-      const childMap = new Map<string, CategoryNode>();
-      node.children.forEach(child => childMap.set(child.id, child));
-      
-      parentNode = node;
-      currentLevel = childMap;
-    });
-  });
-  
-  return Array.from(rootMap.values()).sort((a, b) => b.count - a.count);
-}
-
-function CategoryTreeItem({ 
-  node, 
-  level, 
-  selectedCategory, 
-  expandedCategories, 
-  onSelect, 
-  onToggle 
-}: { 
-  node: CategoryNode;
-  level: number;
-  selectedCategory: string | null;
-  expandedCategories: Set<string>;
-  onSelect: (id: string) => void;
-  onToggle: (id: string) => void;
-}) {
-  const hasChildren = node.children.length > 0;
-  const isExpanded = expandedCategories.has(node.id);
-  const isSelected = selectedCategory === node.id;
-  
-  return (
-    <div style={{ marginLeft: level > 0 ? '12px' : '0' }}>
-      <div className="flex items-center">
-        {hasChildren && (
-          <button
-            onClick={(e) => { e.stopPropagation(); onToggle(node.id); }}
-            className="p-1 hover:bg-slate-100 rounded flex-shrink-0"
-          >
-            {isExpanded ? (
-              <ChevronDown className="w-4 h-4" />
-            ) : (
-              <ChevronRight className="w-4 h-4" />
-            )}
-          </button>
-        )}
-        {!hasChildren && level > 0 && <div className="w-6" />}
-        <button
-          onClick={() => onSelect(node.id)}
-          className={`flex-1 text-left px-3 py-2 rounded text-sm flex items-center justify-between ${
-            isSelected 
-              ? 'bg-primary text-white' 
-              : 'hover:bg-slate-50'
-          }`}
-          data-testid={`filter-category-${node.id}`}
-        >
-          <span className={level === 0 ? 'font-medium' : ''}>{node.name}</span>
-          <span className={`text-xs ${isSelected ? 'text-white/80' : 'text-muted-foreground'}`}>
-            ({node.count})
-          </span>
-        </button>
-      </div>
-      
-      {hasChildren && isExpanded && (
-        <div className="border-l-2 border-slate-100 ml-2 mt-1">
-          {node.children.map(child => (
-            <CategoryTreeItem
-              key={child.id}
-              node={child}
-              level={level + 1}
-              selectedCategory={selectedCategory}
-              expandedCategories={expandedCategories}
-              onSelect={onSelect}
-              onToggle={onToggle}
-            />
-          ))}
-        </div>
-      )}
-    </div>
-  );
+  if (isNaN(num) || num === 0) return 'Ring for pris';
+  return num.toLocaleString('da-DK') + ' kr';
 }
 
 export default function Machines() {
+  const params = useParams<{ kategori?: string }>();
+  const [, navigate] = useLocation();
   const [machines, setMachines] = useState<Machine[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
-  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
-  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
-  const [showBrandDropdown, setShowBrandDropdown] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showCatDrop, setShowCatDrop] = useState(false);
+  const [showBrandDrop, setShowBrandDrop] = useState(false);
+
+  const selectedCategory = params.kategori || null;
 
   useEffect(() => {
-    document.title = 'Maskiner på lager - Rold Maskinhandel | Brugte maskiner i Nordjylland';
-  }, []);
+    document.title = selectedCategory
+      ? `${selectedCategory} — Ib E. Mortensen A/S`
+      : 'Maskiner til salg — Ib E. Mortensen A/S';
+  }, [selectedCategory]);
 
   useEffect(() => {
-    async function fetchMachines() {
+    (async () => {
       try {
-        const response = await fetch('/api/machines');
-        if (!response.ok) {
-          throw new Error(`HTTP error: ${response.status}`);
-        }
-        const contentType = response.headers.get('content-type');
-        if (!contentType || !contentType.includes('application/json')) {
-          throw new Error('Response is not JSON');
-        }
-        const data = await response.json();
-        if (Array.isArray(data)) {
-          setMachines(data);
-        }
-      } catch (error) {
-        console.error('Error fetching machines:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchMachines();
+        const res = await fetch('/api/machines');
+        const data = await res.json();
+        if (Array.isArray(data)) setMachines(data);
+      } catch (e) { console.error(e); }
+      finally { setLoading(false); }
+    })();
   }, []);
 
-  const categoryTree = useMemo(() => buildCategoryTree(machines), [machines]);
-
-  const brands = useMemo(() => {
-    const brandCounts = new Map<string, number>();
-    machines.forEach(machine => {
-      if (machine.brand) {
-        brandCounts.set(machine.brand, (brandCounts.get(machine.brand) || 0) + 1);
+  const categories = useMemo(() => {
+    const map = new Map<string, { name: string; count: number }>();
+    machines.forEach(m => {
+      const cat = m.category?.[0];
+      if (cat) {
+        const e = map.get(cat.id);
+        if (e) e.count++; else map.set(cat.id, { name: cat.name, count: 1 });
       }
     });
-    return Array.from(brandCounts.entries())
-      .sort((a, b) => b[1] - a[1])
-      .map(([brand, count]) => ({ brand, count }));
+    return Array.from(map.entries()).map(([slug, d]) => ({ slug, ...d })).sort((a, b) => b.count - a.count);
   }, [machines]);
 
-  const filteredMachines = useMemo(() => {
-    return machines.filter(machine => {
-      if (selectedCategory && !machine.category?.some(cat => cat.id === selectedCategory)) {
-        return false;
-      }
-      if (selectedBrand && machine.brand !== selectedBrand) {
-        return false;
-      }
-      return true;
-    });
-  }, [machines, selectedCategory, selectedBrand]);
+  const brands = useMemo(() => {
+    const map = new Map<string, number>();
+    machines.forEach(m => { if (m.brand) map.set(m.brand, (map.get(m.brand) || 0) + 1); });
+    return Array.from(map.entries()).sort((a, b) => b[1] - a[1]).map(([b, c]) => ({ brand: b, count: c }));
+  }, [machines]);
 
-  const clearFilters = () => {
-    setSelectedCategory(null);
-    setSelectedBrand(null);
-  };
-
-  const toggleCategoryExpand = (catId: string) => {
-    const newExpanded = new Set(expandedCategories);
-    if (newExpanded.has(catId)) {
-      newExpanded.delete(catId);
-    } else {
-      newExpanded.add(catId);
+  const filtered = useMemo(() => machines.filter(m => {
+    if (selectedCategory && !m.category?.some(c => c.id === selectedCategory)) return false;
+    if (selectedBrand && m.brand !== selectedBrand) return false;
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      if (!m.title.toLowerCase().includes(q) && !m.brand.toLowerCase().includes(q) && !m.model.toLowerCase().includes(q)) return false;
     }
-    setExpandedCategories(newExpanded);
-  };
+    return true;
+  }), [machines, selectedCategory, selectedBrand, searchQuery]);
 
-  const selectCategory = (catId: string) => {
-    setSelectedCategory(selectedCategory === catId ? null : catId);
-    setShowCategoryDropdown(false);
-  };
-
-  const selectBrand = (brand: string) => {
-    setSelectedBrand(selectedBrand === brand ? null : brand);
-    setShowBrandDropdown(false);
-  };
-
-  const hasActiveFilters = selectedCategory || selectedBrand;
-
-  // Get top-level categories with a representative image from machines in that category
+  const selectedCatName = categories.find(c => c.slug === selectedCategory)?.name;
   const topCategories = useMemo(() => {
-    return categoryTree.map(node => {
-      // Find first machine in this category that has a picture
-      const machine = machines.find(m =>
-        m.category?.some(cat => cat.id === node.id) && m.pictures?.[0]?.url
-      );
-      return {
-        id: node.id,
-        name: node.name,
-        count: node.count,
-        image: machine?.pictures?.[0]?.url || null,
-      };
+    return categories.map(c => {
+      const machine = machines.find(m => m.category?.some(cat => cat.id === c.slug) && m.pictures?.[0]?.url);
+      return { id: c.slug, name: c.name, count: c.count, image: machine?.pictures?.[0]?.url || null };
     });
-  }, [categoryTree, machines]);
+  }, [categories, machines]);
 
-  const selectedCategoryName = useMemo(() => {
-    if (!selectedCategory) return null;
-    
-    function findInTree(nodes: CategoryNode[]): string | null {
-      for (const node of nodes) {
-        if (node.id === selectedCategory) return node.name;
-        const found = findInTree(node.children);
-        if (found) return found;
-      }
-      return null;
-    }
-    
-    return findInTree(categoryTree);
-  }, [selectedCategory, categoryTree]);
+  const hasFilters = selectedCategory || selectedBrand || searchQuery;
 
   return (
-    <div className="min-h-screen bg-[#f5f5f5] flex flex-col">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />
 
-      <main className="flex-1 pt-[72px]">
-        <div className="sticky top-[72px] z-40 bg-white border-b border-gray-200">
-          <div className="max-w-[1360px] mx-auto px-5 sm:px-8 py-4">
+      <main className="flex-1 pt-16 lg:pt-[124px]">
+        {/* Top bar */}
+        <div className="bg-white border-b border-gray-100 sticky top-16 lg:top-[124px] z-40">
+          <div className="max-w-[1400px] mx-auto px-5 sm:px-6 py-3.5">
             <div className="flex flex-wrap items-center gap-3">
-              <h1 className="font-serif text-[22px] text-[#1a1a1a] mr-4">Maskiner til salg</h1>
-              <div className="relative">
-                <Button
-                  variant="outline"
-                  className="flex items-center gap-2"
-                  onClick={() => {
-                    setShowCategoryDropdown(!showCategoryDropdown);
-                    setShowBrandDropdown(false);
-                  }}
-                  data-testid="button-category-filter"
-                >
-                  <span className="font-medium">Kategori</span>
-                  {selectedCategoryName && (
-                    <span className="bg-primary text-white text-xs px-2 py-0.5 rounded">
-                      {selectedCategoryName}
-                    </span>
-                  )}
-                  <ChevronDown className="w-4 h-4" />
-                </Button>
+              <h1 className="text-[20px] font-bold text-gray-900 mr-2">
+                {selectedCatName || 'Alle maskiner'}
+              </h1>
 
-                {showCategoryDropdown && (
-                  <div className="absolute top-full left-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-border z-50 max-h-96 overflow-y-auto">
-                    <div className="p-2">
-                      <button
-                        onClick={() => selectCategory('')}
-                        className={`w-full text-left px-3 py-2 rounded text-sm font-medium ${
-                          !selectedCategory ? 'bg-slate-100' : 'hover:bg-slate-50'
-                        }`}
-                      >
-                        Alle kategorier
-                      </button>
-                      
-                      {categoryTree.map(root => (
-                        <CategoryTreeItem
-                          key={root.id}
-                          node={root}
-                          level={0}
-                          selectedCategory={selectedCategory}
-                          expandedCategories={expandedCategories}
-                          onSelect={selectCategory}
-                          onToggle={toggleCategoryExpand}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
+              {/* Search */}
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Søg maskiner..."
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  className="pl-9 pr-4 py-2.5 text-[14px] border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-gray-300 focus:outline-none w-52 transition-colors"
+                />
               </div>
 
+              {/* Category dropdown */}
               <div className="relative">
-                <Button
-                  variant="outline"
-                  className="flex items-center gap-2"
-                  onClick={() => {
-                    setShowBrandDropdown(!showBrandDropdown);
-                    setShowCategoryDropdown(false);
-                  }}
-                  data-testid="button-brand-filter"
+                <button
+                  onClick={() => { setShowCatDrop(!showCatDrop); setShowBrandDrop(false); }}
+                  className="flex items-center gap-2 text-[14px] font-medium text-[#1A1A1A] border border-gray-200 rounded-lg px-4 py-2.5 hover:bg-gray-50 transition-colors"
                 >
-                  <span className="font-medium">Mærke</span>
-                  {selectedBrand && (
-                    <span className="bg-primary text-white text-xs px-2 py-0.5 rounded">
-                      {selectedBrand}
-                    </span>
-                  )}
+                  Kategori
+                  {selectedCatName && <span className="bg-[#1B6B4A] text-white text-[12px] px-2 py-0.5 rounded">{selectedCatName}</span>}
                   <ChevronDown className="w-4 h-4" />
-                </Button>
-
-                {showBrandDropdown && (
-                  <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-border z-50 max-h-80 overflow-y-auto">
-                    <div className="p-2">
-                      <button
-                        onClick={() => selectBrand('')}
-                        className={`w-full text-left px-3 py-2 rounded text-sm font-medium ${
-                          !selectedBrand ? 'bg-slate-100' : 'hover:bg-slate-50'
-                        }`}
-                      >
-                        Alle mærker
+                </button>
+                {showCatDrop && (
+                  <div className="absolute top-full left-0 mt-1 w-64 bg-white rounded-lg shadow-lg border border-gray-100 z-50 max-h-80 overflow-y-auto">
+                    <div className="p-1.5">
+                      <button onClick={() => { navigate('/maskiner'); setShowCatDrop(false); }} className={`w-full text-left px-3 py-2.5 rounded-md text-[14px] ${!selectedCategory ? 'bg-gray-100 font-medium' : 'hover:bg-gray-50'}`}>
+                        Alle kategorier
                       </button>
-                      
-                      {brands.map(({ brand, count }) => (
-                        <button
-                          key={brand}
-                          onClick={() => selectBrand(brand)}
-                          className={`w-full text-left px-3 py-2 rounded text-sm flex items-center justify-between ${
-                            selectedBrand === brand 
-                              ? 'bg-primary text-white' 
-                              : 'hover:bg-slate-50'
-                          }`}
-                          data-testid={`filter-brand-${brand}`}
-                        >
-                          <span>{brand}</span>
-                          <span className={`text-xs ${selectedBrand === brand ? 'text-white/80' : 'text-muted-foreground'}`}>
-                            ({count})
-                          </span>
+                      {categories.map(c => (
+                        <button key={c.slug} onClick={() => { navigate(`/maskiner/${c.slug}`); setShowCatDrop(false); }}
+                          className={`w-full text-left px-3 py-2.5 rounded-md text-[14px] flex justify-between ${selectedCategory === c.slug ? 'bg-[#1B6B4A] text-white' : 'hover:bg-gray-50'}`}>
+                          <span>{c.name}</span>
+                          <span className={`text-[12px] ${selectedCategory === c.slug ? 'text-white/60' : 'text-gray-400'}`}>{c.count}</span>
                         </button>
                       ))}
                     </div>
@@ -375,59 +145,77 @@ export default function Machines() {
                 )}
               </div>
 
-              {hasActiveFilters && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={clearFilters}
-                  className="text-primary hover:text-primary"
-                  data-testid="button-clear-filters"
+              {/* Brand dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => { setShowBrandDrop(!showBrandDrop); setShowCatDrop(false); }}
+                  className="flex items-center gap-2 text-[14px] font-medium text-[#1A1A1A] border border-gray-200 rounded-lg px-4 py-2.5 hover:bg-gray-50 transition-colors"
                 >
-                  <X className="w-4 h-4 mr-1" />
-                  Ryd filtre
-                </Button>
+                  Mærke
+                  {selectedBrand && <span className="bg-[#1B6B4A] text-white text-[12px] px-2 py-0.5 rounded">{selectedBrand}</span>}
+                  <ChevronDown className="w-4 h-4" />
+                </button>
+                {showBrandDrop && (
+                  <div className="absolute top-full left-0 mt-1 w-56 bg-white rounded-lg shadow-lg border border-gray-100 z-50 max-h-80 overflow-y-auto">
+                    <div className="p-1.5">
+                      <button onClick={() => { setSelectedBrand(null); setShowBrandDrop(false); }} className={`w-full text-left px-3 py-2.5 rounded-md text-[14px] ${!selectedBrand ? 'bg-gray-100 font-medium' : 'hover:bg-gray-50'}`}>
+                        Alle mærker
+                      </button>
+                      {brands.map(b => (
+                        <button key={b.brand} onClick={() => { setSelectedBrand(b.brand); setShowBrandDrop(false); }}
+                          className={`w-full text-left px-3 py-2.5 rounded-md text-[14px] flex justify-between ${selectedBrand === b.brand ? 'bg-[#1B6B4A] text-white' : 'hover:bg-gray-50'}`}>
+                          <span>{b.brand}</span>
+                          <span className={`text-[12px] ${selectedBrand === b.brand ? 'text-white/60' : 'text-gray-400'}`}>{b.count}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {hasFilters && (
+                <button onClick={() => { navigate('/maskiner'); setSelectedBrand(null); setSearchQuery(''); }}
+                  className="text-[14px] text-gray-500 hover:text-gray-900 flex items-center gap-1 transition-colors">
+                  <X className="w-4 h-4" /> Ryd
+                </button>
               )}
 
-              <div className="ml-auto text-sm text-muted-foreground">
-                Viser {filteredMachines.length} af {machines.length} maskiner
-              </div>
+              <span className="ml-auto text-[14px] text-gray-400">{filtered.length} maskiner</span>
             </div>
           </div>
         </div>
 
         {/* Category circles */}
         {!loading && topCategories.length > 0 && (
-          <div className="max-w-[1360px] mx-auto px-5 sm:px-8 pt-8 pb-2">
-            <div className="flex justify-center gap-8 sm:gap-10 overflow-x-auto pb-4">
-              {/* All */}
-              <button
-                onClick={() => { setSelectedCategory(null); setSelectedBrand(null); }}
-                className="flex flex-col items-center gap-2.5 flex-shrink-0 group"
+          <div className="max-w-[1400px] mx-auto px-5 sm:px-6 pt-8 pb-2">
+            <div className="flex justify-center gap-6 sm:gap-8 overflow-x-auto pb-4">
+              <Link
+                href="/maskiner"
+                className="flex flex-col items-center gap-2 flex-shrink-0 group"
+                onClick={() => setSelectedBrand(null)}
               >
-                <div className={`w-[76px] h-[76px] sm:w-[88px] sm:h-[88px] rounded-full overflow-hidden border-[3px] transition-all duration-200 flex items-center justify-center ${
+                <div className={`w-[80px] h-[80px] sm:w-[92px] sm:h-[92px] rounded-full overflow-hidden border-[3px] transition-all duration-200 flex items-center justify-center ${
                   !selectedCategory
-                    ? 'border-[#FFD942] shadow-lg shadow-[#FFD942]/20 scale-105'
-                    : 'border-gray-200 group-hover:border-[#FFD942]/50'
-                } bg-[#3B404B]`}>
+                    ? 'border-[#FFF100] shadow-lg shadow-[#FFF100]/20 scale-105'
+                    : 'border-gray-200 group-hover:border-[#FFF100]/50'
+                } bg-[#1a1a1a]`}>
                   <span className="text-white text-[14px] font-bold tracking-wide">ALLE</span>
                 </div>
                 <div className="text-center">
-                  <p className={`text-[13px] font-semibold leading-tight ${
-                    !selectedCategory ? 'text-[#3B404B]' : 'text-[#666]'
-                  }`}>Alle</p>
-                  <p className="text-[11px] text-[#aaa] mt-0.5">{machines.length} maskiner</p>
+                  <p className={`text-[13px] font-semibold leading-tight ${!selectedCategory ? 'text-[#1a1a1a]' : 'text-gray-500'}`}>Alle</p>
+                  <p className="text-[12px] text-gray-400 mt-0.5">{machines.length}</p>
                 </div>
-              </button>
+              </Link>
               {topCategories.map((cat) => (
-                <button
+                <Link
                   key={cat.id}
-                  onClick={() => selectCategory(cat.id)}
-                  className="flex flex-col items-center gap-2.5 flex-shrink-0 group"
+                  href={selectedCategory === cat.id ? '/maskiner' : `/maskiner/${cat.id}`}
+                  className="flex flex-col items-center gap-2 flex-shrink-0 group"
                 >
-                  <div className={`w-[76px] h-[76px] sm:w-[88px] sm:h-[88px] rounded-full overflow-hidden border-[3px] transition-all duration-200 ${
+                  <div className={`w-[80px] h-[80px] sm:w-[92px] sm:h-[92px] rounded-full overflow-hidden border-[3px] transition-all duration-200 ${
                     selectedCategory === cat.id
-                      ? 'border-[#FFD942] shadow-lg shadow-[#FFD942]/20 scale-105'
-                      : 'border-gray-200 group-hover:border-[#FFD942]/50'
+                      ? 'border-[#FFF100] shadow-lg shadow-[#FFF100]/20 scale-105'
+                      : 'border-gray-200 group-hover:border-[#FFF100]/50'
                   }`}>
                     {cat.image ? (
                       <img src={cat.image} alt={cat.name} className="w-full h-full object-cover" />
@@ -436,69 +224,42 @@ export default function Machines() {
                     )}
                   </div>
                   <div className="text-center">
-                    <p className={`text-[13px] font-semibold leading-tight capitalize ${
-                      selectedCategory === cat.id ? 'text-[#3B404B]' : 'text-[#666]'
-                    }`}>{cat.name}</p>
-                    <p className="text-[11px] text-[#aaa] mt-0.5">{cat.count} maskiner</p>
+                    <p className={`text-[13px] font-semibold leading-tight ${selectedCategory === cat.id ? 'text-[#1a1a1a]' : 'text-gray-500'}`}>{cat.name}</p>
+                    <p className="text-[12px] text-gray-400 mt-0.5">{cat.count}</p>
                   </div>
-                </button>
+                </Link>
               ))}
             </div>
           </div>
         )}
 
-        <div className="max-w-[1360px] mx-auto px-5 sm:px-8 py-6">
+        {/* Grid */}
+        <div className="max-w-[1400px] mx-auto px-5 sm:px-6 py-8">
           {loading ? (
-            <div className="flex justify-center items-center py-20">
-              <Loader2 className="w-8 h-8 animate-spin text-primary" />
-            </div>
+            <div className="flex justify-center py-20"><Loader2 className="w-6 h-6 animate-spin text-gray-400" /></div>
           ) : (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {filteredMachines.map((machine) => (
-                  <Link
-                    key={machine.id}
-                    href={`/maskine/${machine.id}`}
-                    className="group"
-                    data-testid={`card-machine-${machine.id}`}
-                  >
-                    <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                {filtered.map(machine => (
+                  <Link key={machine.id} href={`/maskine/${machine.id}`} className="group block">
+                    <div className="bg-white rounded-xl overflow-hidden border border-gray-100 hover:border-[#FFF100]/30 hover:shadow-lg transition-all duration-300">
                       <div className="aspect-[4/3] relative overflow-hidden bg-gray-100">
                         {machine.pictures?.[0]?.url ? (
-                          <img
-                            src={machine.pictures[0].url}
-                            alt={machine.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                            loading="lazy"
-                          />
+                          <img src={machine.pictures[0].url} alt={machine.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-gray-400">
-                            Ingen billede
-                          </div>
-                        )}
-                        {machine.year && machine.year !== 'Årgang ukendt' && (
-                          <div className="absolute top-3 left-3">
-                            <span className="bg-white/95 backdrop-blur-sm text-[12px] font-semibold px-2.5 py-1 rounded-full text-[#1a1a1a]">
-                              {machine.year}
-                            </span>
-                          </div>
+                          <div className="w-full h-full flex items-center justify-center text-gray-300 text-[14px]">Ingen billede</div>
                         )}
                       </div>
                       <div className="p-4">
-                        <span className="text-[11px] text-gray-400 font-semibold uppercase tracking-wider">
-                          {machine.brand}
-                        </span>
-                        <h3 className="font-semibold text-[#1a1a1a] text-[15px] mt-1 mb-3 line-clamp-2 leading-snug group-hover:text-[#3B404B] transition-colors">
-                          {machine.title}
-                        </h3>
-                        <div className="flex items-end justify-between pt-3 border-t border-gray-100">
+                        <p className="text-[12px] text-[#C4A800] font-semibold uppercase tracking-wider mb-1">{machine.brand}</p>
+                        <h3 className="text-[15px] font-semibold text-gray-900 leading-snug mb-3 line-clamp-2">{machine.title}</h3>
+                        <div className="flex items-end justify-between">
                           <div>
-                            <span className="font-bold text-[17px] text-[#1a1a1a]" data-testid={`text-machine-price-${machine.id}`}>
-                              {formatPrice(machine.price)} kr
-                            </span>
-                            <span className="text-[11px] text-gray-400 block mt-0.5">ekskl. moms</span>
+                            <p className="text-[18px] font-bold text-gray-900">{formatPrice(machine.price)}</p>
+                            <p className="text-[12px] text-gray-400">ekskl. moms</p>
                           </div>
-                          <span className="text-[13px] font-semibold text-[#3B404B] group-hover:underline">
+                          <span className="text-[13px] font-medium text-gray-400 group-hover:text-gray-600 transition-colors">
                             Se mere →
                           </span>
                         </div>
@@ -507,16 +268,11 @@ export default function Machines() {
                   </Link>
                 ))}
               </div>
-
-              {filteredMachines.length === 0 && (
-                <div className="text-center py-20 text-muted-foreground">
-                  <p>Ingen maskiner matcher dine filtre.</p>
-                  <button 
-                    onClick={clearFilters}
-                    className="mt-2 text-primary hover:underline"
-                  >
-                    Ryd filtre
-                  </button>
+              {filtered.length === 0 && (
+                <div className="text-center py-20 text-gray-400">
+                  <p className="text-[16px]">Ingen maskiner matcher din søgning.</p>
+                  <button onClick={() => { navigate('/maskiner'); setSelectedBrand(null); setSearchQuery(''); }}
+                    className="mt-2 text-gray-600 hover:underline text-[15px]">Ryd filtre</button>
                 </div>
               )}
             </>

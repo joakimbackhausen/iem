@@ -1,18 +1,7 @@
 import * as cheerio from "cheerio";
 
-const FEED_BASE = "https://altimaskiner.dk/feed/1326/html";
-
-const CATEGORY_NAMES: Record<string, string> = {
-  entreprenoermaskiner: "Entreprenørmaskiner",
-  gravemaskiner: "Gravemaskiner",
-  minigravere: "Minigravere",
-  materialehandtering: "Materialehåndtering",
-  minilaessere: "Minilæssere",
-  gummihjulslaessere: "Gummihjulslæssere",
-  teleskoplaessere: "Teleskoplæssere",
-  dumpere: "Dumpere",
-  transport: "Transport",
-};
+const FEED_URL =
+  "https://lister.maskinbladet.dk/eksterne/extListe_3.php?c_GUID=509b402d-8036-4e33-b966-006764ee4ab4&color=F7E00E&styleVer=std&CAT=_all_";
 
 interface Machine {
   id: number;
@@ -34,19 +23,10 @@ interface Machine {
   extra_parameters: Record<string, { name: string; value: string }>;
 }
 
-interface ListItem {
-  adId: number;
-  title: string;
-  price: string;
-  thumbnail: string;
-  categorySlugs: string[];
-  url: string;
-}
-
 // ── Cache ──
 let cachedMachines: Machine[] | null = null;
 let cacheTimestamp = 0;
-const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
+const CACHE_TTL = 10 * 60 * 1000;
 let isRefreshing = false;
 
 async function fetchPage(url: string): Promise<string> {
@@ -55,131 +35,139 @@ async function fetchPage(url: string): Promise<string> {
   return res.text();
 }
 
-function parseListPage(html: string): ListItem[] {
-  const $ = cheerio.load(html);
-  const items: ListItem[] = [];
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/æ/g, "ae")
+    .replace(/ø/g, "oe")
+    .replace(/å/g, "aa")
+    .replace(/ü/g, "u")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
 
-  $("li.grid-item").each((_, el) => {
+function parseListPage(html: string): Machine[] {
+  const $ = cheerio.load(html);
+  const machines: Machine[] = [];
+  let machineId = 1;
+
+  // Top-level categories are <h5> elements like "Entreprenørmaskiner"
+  // Under each category, subcategory groups are in .elementGuid
+  // Each machine is a .container-fluid.bg-custom inside .sublinks
+
+  let topCategory = "";
+
+  // Walk through the DOM in order
+  $("h5, .bg-custom").each((_, el) => {
     const $el = $(el);
-    const link = $el.find("a").first();
-    const href = link.attr("href") || "";
-    const dataHref = link.attr("data-href") || "";
 
-    const adIdMatch = href.match(/ad_id=(\d+)/);
-    if (!adIdMatch) return;
+    if ((el as cheerio.TagElement).name === "h5") {
+      topCategory = $el.text().trim();
+      return;
+    }
 
-    const adId = parseInt(adIdMatch[1], 10);
-    const title = $el.find(".grid-title").text().trim();
-    const priceText = $el.find(".price").text().trim();
-    const price = priceText.replace(/[^\d]/g, "");
-    const thumbnail = $el.find("img").attr("src") || "";
+    // This is a machine entry (.bg-custom)
+    // Find subcategory from the parent .elementGuid's .list-group-item
+    let subCategory = "";
+    const parentElement = $el.closest(".elementGuid");
+    if (parentElement.length) {
+      subCategory = parentElement.find(".list-group-item").first().text().trim();
+    }
 
-    const classes = ($el.attr("class") || "").split(/\s+/).filter(
-      (c) => c !== "grid-item" && c !== ""
-    );
+    const categoryName = subCategory || topCategory || "Andet";
 
-    items.push({
-      adId,
-      title,
-      price,
-      thumbnail,
-      categorySlugs: classes,
-      url: dataHref || href,
+    // Extract image
+    const img = $el.find("img").first();
+    const imgSrc = img.attr("src") || "";
+    // Request higher resolution thumbnail (800x600 instead of 200x150)
+    const fullImg = imgSrc.replace(/\?w=\d+&h=\d+/, "?w=800&h=600");
+
+    // Extract detail link
+    const detailLink = $el.find('a.btn').attr("href") || $el.find('a[href*="extDetail"]').first().attr("href") || "";
+
+    // Extract table data
+    const tbody = $el.find("tbody tr").first();
+    const tds = tbody.find("td");
+    const brand = $(tds[0]).text().trim();
+    const model = $(tds[1]).text().trim();
+    const year = $(tds[2]).text().trim();
+    const rawPrice = $(tds[3]).text().trim();
+
+    // Clean price: "65.000,00" → "65000"
+    const cleanPrice = rawPrice.replace(/\./g, "").replace(/,\d+$/, "");
+
+    // Extract description
+    let description = "";
+    $el.find("p").each((_, p) => {
+      const text = $(p).text().trim();
+      if (text.startsWith("Info:")) {
+        description = text.replace(/^Info:\s*/, "");
+      }
     });
+
+    const title = `${brand} ${model}`.trim();
+    if (!title || title.length < 2) return;
+
+    const catSlug = slugify(categoryName);
+
+    machines.push({
+      id: machineId,
+      ad_id: machineId,
+      sku: machineId,
+      company_id: "iem",
+      title,
+      model: model || title,
+      brand,
+      year,
+      price: cleanPrice || "0",
+      currency: "DKK",
+      url: detailLink,
+      pictures: fullImg ? [{ url: fullImg, date: "" }] : [],
+      category: [
+        { id: slugify(topCategory || "andet"), tid: slugify(topCategory || "andet"), name: topCategory || "Andet" },
+        ...(subCategory && subCategory !== topCategory
+          ? [{ id: catSlug, tid: catSlug, name: subCategory }]
+          : []),
+      ],
+      description,
+      contact: "Peter Holm",
+      address: "Vesterbro 73, DK-8970 Havndal",
+      extra_parameters: {},
+    });
+    machineId++;
   });
 
-  return items;
+  return machines;
 }
 
-function parsePageCount(html: string): number {
-  const matches = html.match(/page=(\d+)/g);
-  if (!matches) return 1;
-  const pages = matches.map((m) => parseInt(m.replace("page=", ""), 10));
-  return Math.max(...pages, 1);
-}
+async function enrichWithDetails(machine: Machine): Promise<Machine> {
+  if (!machine.url || !machine.url.includes("extDetail")) return machine;
+  try {
+    const html = await fetchPage(machine.url);
+    const $ = cheerio.load(html);
 
-function parseDetailPage(html: string, adId: number): Partial<Machine> {
-  const $ = cheerio.load(html);
+    const pictures: { url: string; date: string }[] = [];
+    $("img").each((_, el) => {
+      const src = $(el).attr("src") || "";
+      if (src.includes("maskinbladet.dk/maskiner/images") || src.includes("maskinbasen.dk")) {
+        // Use high-res version: request 1200px wide
+        const baseSrc = src.replace(/\?w=\d+&h=\d+/, "");
+        const hiRes = baseSrc + "?w=1200&h=900";
+        if (!pictures.some((p) => p.url === hiRes)) {
+          pictures.push({ url: hiRes, date: "" });
+        }
+      }
+    });
+    if (pictures.length > 0) machine.pictures = pictures;
 
-  const pictures: { url: string; date: string }[] = [];
-  $("a.my-image-links").each((_, el) => {
-    const href = $(el).attr("href");
-    if (href) {
-      pictures.push({ url: href, date: "" });
+    // Also upgrade the list thumbnail to hi-res
+    if (machine.pictures.length === 0 && pictures.length === 0) {
+      // Keep existing
     }
-  });
-
-  const descriptionDiv = $(".fieldset").filter((_, el) => {
-    return $(el).find("h3.title").text().trim() === "Beskrivelse";
-  });
-  const description = descriptionDiv.find("div").first().html()?.trim() || "";
-
-  const facts: Record<string, string> = {};
-  $(".data-list li").each((_, el) => {
-    const key = $(el).find("strong").text().trim();
-    const value = $(el).find("span").text().trim();
-    if (key && value) {
-      facts[key] = value;
-    }
-  });
-
-  return {
-    year: facts["Årgang"] || "",
-    brand: facts["Fabrikat"] || "",
-    model: facts["Model"] || "",
-    description,
-    pictures,
-    contact: facts["Kontaktperson"] || "",
-    address: facts["Adresse"] || "",
-  };
-}
-
-function buildCategories(slugs: string[]): { id: string; tid: string; name: string }[] {
-  return slugs.map((slug) => ({
-    id: slug,
-    tid: slug,
-    name: CATEGORY_NAMES[slug] || slug,
-  }));
-}
-
-async function fetchAllListItems(): Promise<ListItem[]> {
-  const firstPageHtml = await fetchPage(FEED_BASE);
-  const firstPageItems = parseListPage(firstPageHtml);
-  const pageCount = parsePageCount(firstPageHtml);
-
-  if (pageCount <= 1) return firstPageItems;
-
-  const otherPages = Array.from({ length: pageCount - 1 }, (_, i) => i + 2);
-  const otherResults = await Promise.all(
-    otherPages.map(async (page) => {
-      const html = await fetchPage(`${FEED_BASE}?page=${page}`);
-      return parseListPage(html);
-    })
-  );
-
-  return [...firstPageItems, ...otherResults.flat()];
-}
-
-function listItemToMachine(item: ListItem): Machine {
-  return {
-    id: item.adId,
-    ad_id: item.adId,
-    sku: item.adId,
-    company_id: "1326",
-    title: item.title,
-    model: item.title,
-    brand: "",
-    year: "",
-    price: item.price,
-    currency: "DKK",
-    url: item.url,
-    pictures: item.thumbnail ? [{ url: item.thumbnail, date: "" }] : [],
-    category: buildCategories(item.categorySlugs),
-    description: "",
-    contact: "",
-    address: "",
-    extra_parameters: {},
-  };
+  } catch {
+    // Ignore
+  }
+  return machine;
 }
 
 async function refreshCache(): Promise<void> {
@@ -187,59 +175,19 @@ async function refreshCache(): Promise<void> {
   isRefreshing = true;
 
   try {
-    console.log("[scraper] Fetching machine list...");
-    const listItems = await fetchAllListItems();
+    console.log("[scraper] Fetching machine list from Maskinbladet...");
+    const html = await fetchPage(FEED_URL);
+    const machines = parseListPage(html);
 
-    // Phase 1: Immediately cache basic list data so API responds fast
-    if (!cachedMachines) {
-      cachedMachines = listItems.map(listItemToMachine);
-      cacheTimestamp = Date.now();
-      console.log(`[scraper] Quick cache ready: ${cachedMachines.length} machines (list only)`);
-    }
+    cachedMachines = machines;
+    cacheTimestamp = Date.now();
+    console.log(`[scraper] Quick cache ready: ${machines.length} machines`);
 
-    // Phase 2: Enrich with detail pages in parallel batches
-    const BATCH_SIZE = 15;
-    const machines: Machine[] = [];
-
-    for (let i = 0; i < listItems.length; i += BATCH_SIZE) {
-      const batch = listItems.slice(i, i + BATCH_SIZE);
-      const details = await Promise.all(
-        batch.map(async (item) => {
-          try {
-            const html = await fetchPage(`${FEED_BASE}?ad_id=${item.adId}`);
-            return parseDetailPage(html, item.adId);
-          } catch {
-            return {} as Partial<Machine>;
-          }
-        })
-      );
-
-      batch.forEach((item, idx) => {
-        const detail = details[idx];
-        const pics = detail.pictures && detail.pictures.length > 0
-          ? detail.pictures
-          : item.thumbnail ? [{ url: item.thumbnail, date: "" }] : [];
-
-        machines.push({
-          id: item.adId,
-          ad_id: item.adId,
-          sku: item.adId,
-          company_id: "1326",
-          title: item.title,
-          model: detail.model || item.title,
-          brand: detail.brand || "",
-          year: detail.year || "",
-          price: item.price,
-          currency: "DKK",
-          url: item.url,
-          pictures: pics,
-          category: buildCategories(item.categorySlugs),
-          description: detail.description || "",
-          contact: detail.contact || "",
-          address: detail.address || "",
-          extra_parameters: {},
-        });
-      });
+    // Enrich with detail pages
+    const BATCH_SIZE = 10;
+    for (let i = 0; i < machines.length; i += BATCH_SIZE) {
+      const batch = machines.slice(i, i + BATCH_SIZE);
+      await Promise.all(batch.map((m) => enrichWithDetails(m)));
     }
 
     cachedMachines = machines;
@@ -252,29 +200,18 @@ async function refreshCache(): Promise<void> {
   }
 }
 
-// ── Pre-fetch on server start ──
 refreshCache();
 
-// ── Background refresh: check every 2 minutes ──
 setInterval(() => {
   const age = Date.now() - cacheTimestamp;
-  if (age > CACHE_TTL - 2 * 60 * 1000) {
-    // Refresh 2 min before expiry so users never wait
-    refreshCache();
-  }
+  if (age > CACHE_TTL - 2 * 60 * 1000) refreshCache();
 }, 2 * 60 * 1000);
 
 export async function fetchAllMachines(): Promise<Machine[]> {
-  // If cache exists, return immediately (even if stale — background refresh handles it)
   if (cachedMachines) {
-    // Trigger background refresh if stale
-    if (Date.now() - cacheTimestamp > CACHE_TTL) {
-      refreshCache();
-    }
+    if (Date.now() - cacheTimestamp > CACHE_TTL) refreshCache();
     return cachedMachines;
   }
-
-  // First request ever — wait for data
   await refreshCache();
   return cachedMachines || [];
 }
@@ -282,4 +219,21 @@ export async function fetchAllMachines(): Promise<Machine[]> {
 export async function fetchMachineById(id: number): Promise<Machine | undefined> {
   const machines = await fetchAllMachines();
   return machines.find((m) => m.id === id);
+}
+
+export async function fetchCategories(): Promise<{ slug: string; name: string; count: number }[]> {
+  const machines = await fetchAllMachines();
+  const catMap = new Map<string, { name: string; count: number }>();
+  machines.forEach((m) => {
+    // Use top-level category (first in array)
+    const cat = m.category[0];
+    if (cat) {
+      const existing = catMap.get(cat.id);
+      if (existing) existing.count++;
+      else catMap.set(cat.id, { name: cat.name, count: 1 });
+    }
+  });
+  return Array.from(catMap.entries())
+    .map(([slug, { name, count }]) => ({ slug, name, count }))
+    .sort((a, b) => b.count - a.count);
 }

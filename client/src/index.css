@@ -98,12 +98,13 @@
   --navy-light: 220 13% 32%;
   --navy-foreground: 0 0% 100%;
 
-  --rold-dark: #3B404B;
-  --rold-yellow: #FFD942;
+  --iem-dark: #1a1a1a;
+  --iem-green: #1B6B4A;
+  --iem-yellow: #FFF100;
 
   --font-sans: 'Outfit', system-ui, sans-serif;
-  --font-display: 'Barlow Condensed', sans-serif;
-  --font-serif: 'Barlow Condensed', sans-serif;
+  --font-display: 'Outfit', system-ui, sans-serif;
+  --font-serif: 'Outfit', system-ui, sans-serif;
   --font-mono: Menlo, monospace;
   --radius: 0.375rem;
   --shadow-2xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
@@ -224,10 +225,9 @@
   }
 
   .font-serif {
-    font-family: var(--font-serif);
-    text-transform: uppercase;
+    font-family: var(--font-sans);
     font-weight: 700;
-    letter-spacing: 0.02em;
+    letter-spacing: -0.01em;
   }
 
   [contenteditable][data-placeholder]:empty::before {

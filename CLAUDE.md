@@ -1,6 +1,6 @@
-# Rold Maskinhandel
+# Ib E. Mortensen A/S (IEM)
 
-Website for Rold Maskinhandel - maskinhandler i Nordjylland (Rold/Arden). Køb, salg, udlejning og reparation af brugte maskiner. Maskindata hentes fra ekstern HTML-feed.
+Website for Ib E. Mortensen A/S - maskinhandler i Kastbjerg/Havndal siden 1967. Salg af nye og brugte entreprenørmaskiner, service og reservedele. Maskindata hentes fra ekstern HTML-feed.
 
 ## Tech Stack
 
@@ -53,10 +53,10 @@ script/
 
 ## Branding
 
-- **Farver**: `#3B404B` (mørk grå, primær) + `#FFD942` (gul, accent)
-- **Kontakt**: +45 25 15 94 95 / info@roldmaskinhandel.dk
-- **Adresse**: Haverslevvej 12, Rold, 9510 Arden
-- **CVR**: 38742108
+- **Farver**: `#2d2d2d` (mørk grå, primær) + `#E8A000` (varm gul/orange, accent)
+- **Kontakt**: +45 86 47 03 88 / mail@iem.dk
+- **Adresse**: Vesterbro 73, DK-8970 Havndal
+- **CVR**: 42130710
 
 ## Environment Variables
 
