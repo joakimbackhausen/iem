@@ -19,7 +19,7 @@ export default function Header() {
   return (
     <>
       {/* ── Top bar ── */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100 hidden lg:block h-11">
+      <div className="fixed top-0 left-0 right-0 z-50 bg-white hidden lg:block h-11">
         <div className="px-6 xl:px-10 h-full">
           <div className="flex items-center justify-between h-full text-[14px]">
             <div className="flex items-center gap-7">
@@ -41,7 +41,7 @@ export default function Header() {
       </div>
 
       {/* ── Main header ── */}
-      <header className="fixed top-0 lg:top-[44px] left-0 right-0 z-50 bg-white border-b border-gray-100 h-[80px]">
+      <header className="fixed top-0 lg:top-[44px] left-0 right-0 z-50 bg-white shadow-[0_1px_0_0_rgba(0,0,0,0.05)] h-[80px]">
         <div className="px-4 sm:px-6 xl:px-10 h-full">
           <div className="flex items-center justify-between h-full">
             <Link href="/" className="flex items-center">
