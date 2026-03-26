@@ -75,11 +75,18 @@ export default function SpareParts() {
   );
 
   const brands = useMemo(() => {
-    let pool = spareParts;
+    const hiddenBrands = ['ITR', 'BKT'];
+    let pool = spareParts.filter(p => !hiddenBrands.includes(p.brand));
     if (selectedCategory) pool = pool.filter(p => p.categorySlug === selectedCategory);
     const map = new Map<string, number>();
     pool.forEach(p => map.set(p.brand, (map.get(p.brand) || 0) + 1));
-    return Array.from(map.entries()).sort((a, b) => b[1] - a[1]).map(([b, c]) => ({ brand: b, count: c }));
+    return Array.from(map.entries())
+      .map(([b, c]) => ({ brand: b, count: c }))
+      .sort((a, b) => {
+        if (a.brand === 'Universal') return 1;
+        if (b.brand === 'Universal') return -1;
+        return a.brand.localeCompare(b.brand, 'da');
+      });
   }, [selectedCategory]);
 
   const filtered = useMemo(() => {
