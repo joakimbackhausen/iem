@@ -52,6 +52,10 @@
   --color-destructive-border: var(--destructive-border);
 }
 
+html {
+  font-size: 90%;
+}
+
 :root {
   --button-outline: rgba(0,0,0, .10);
   --badge-outline: rgba(0,0,0, .05);
