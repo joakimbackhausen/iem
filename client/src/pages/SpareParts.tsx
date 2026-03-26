@@ -206,7 +206,7 @@ export default function SpareParts() {
       <main className="flex-1 pt-16 lg:pt-[124px]">
         {/* Top bar */}
         <div className="bg-white border-b border-gray-100 sticky top-16 lg:top-[124px] z-40">
-          <div className="max-w-[1400px] mx-auto px-5 sm:px-6 py-3.5">
+          <div className="max-w-[1260px] mx-auto px-5 sm:px-6 py-3.5">
             <div className="flex items-center gap-3">
               <h1 className="text-[20px] font-bold text-gray-900">
                 {selectedCatObj?.name || 'Reservedele & tilbehør'}
@@ -273,7 +273,7 @@ export default function SpareParts() {
         )}
 
         {/* Layout: sidebar + grid */}
-        <div className="max-w-[1400px] mx-auto px-5 sm:px-6 py-6">
+        <div className="max-w-[1260px] mx-auto px-5 sm:px-6 py-6">
           <div className="flex gap-8">
             {/* Desktop sidebar */}
             <aside className="hidden lg:block w-[260px] flex-shrink-0">

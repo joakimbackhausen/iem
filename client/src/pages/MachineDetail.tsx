@@ -176,7 +176,7 @@ export default function MachineDetail() {
       <main className="flex-1 pt-20 lg:pt-[124px]">
         {/* Breadcrumb bar */}
         <div className="bg-white border-b border-gray-100">
-          <div className="max-w-[1360px] mx-auto px-5 sm:px-8 py-3">
+          <div className="max-w-[1224px] mx-auto px-5 sm:px-8 py-3">
             <Link
               href="/maskiner"
               className="inline-flex items-center gap-2 text-[14px] text-gray-500 hover:text-[#1a1a1a] transition-colors"
@@ -187,7 +187,7 @@ export default function MachineDetail() {
           </div>
         </div>
 
-        <div className="max-w-[1360px] mx-auto px-5 sm:px-8 py-8 lg:py-12">
+        <div className="max-w-[1224px] mx-auto px-5 sm:px-8 py-8 lg:py-12">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
             {/* ─── LEFT: Images ─── */}
             <div className="min-w-0">

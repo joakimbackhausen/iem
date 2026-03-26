@@ -4,7 +4,7 @@ import { Phone, Mail, MapPin, ArrowRight } from 'lucide-react';
 export default function Footer() {
   return (
     <footer className="bg-[#111111] text-gray-400">
-      <div className="max-w-[1400px] mx-auto px-5 sm:px-6 py-16">
+      <div className="max-w-[1260px] mx-auto px-5 sm:px-6 py-16">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
           <div>
             <img src="/images/iem-logo.png" alt="IEM" className="h-10 w-auto brightness-0 invert mb-4 opacity-60" />
@@ -62,7 +62,7 @@ export default function Footer() {
       </div>
 
       <div className="border-t border-white/5">
-        <div className="max-w-[1400px] mx-auto px-5 sm:px-6 py-4">
+        <div className="max-w-[1260px] mx-auto px-5 sm:px-6 py-4">
           <p className="text-[13px] text-gray-600">&copy; {new Date().getFullYear()} Ib E. Mortensen A/S — Alle rettigheder forbeholdes</p>
         </div>
       </div>

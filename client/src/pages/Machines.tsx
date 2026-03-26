@@ -100,7 +100,7 @@ export default function Machines() {
       <main className="flex-1 pt-16 lg:pt-[124px]">
         {/* Top bar */}
         <div className="bg-white border-b border-gray-100 sticky top-16 lg:top-[124px] z-40">
-          <div className="max-w-[1400px] mx-auto px-5 sm:px-6 py-3.5">
+          <div className="max-w-[1260px] mx-auto px-5 sm:px-6 py-3.5">
             <div className="flex flex-wrap items-center gap-3">
               <h1 className="text-[20px] font-bold text-gray-900 mr-2">
                 {selectedCatName || 'Alle maskiner'}
@@ -188,7 +188,7 @@ export default function Machines() {
 
 
         {/* Grid */}
-        <div className="max-w-[1400px] mx-auto px-5 sm:px-6 py-8">
+        <div className="max-w-[1260px] mx-auto px-5 sm:px-6 py-8">
           {loading ? (
             <div className="flex justify-center py-20"><Loader2 className="w-6 h-6 animate-spin text-gray-400" /></div>
           ) : (

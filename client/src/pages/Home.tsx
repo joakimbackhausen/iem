@@ -63,7 +63,7 @@ export default function Home() {
 
       {/* ═══ HERO ═══ */}
       <section className="relative">
-        <div className="relative min-h-[95vh] flex items-center justify-center overflow-hidden">
+        <div className="relative min-h-[100vh] flex items-center justify-center overflow-hidden">
           <img src="/images/hero.jpg" alt="" className="absolute inset-0 w-full h-full object-cover scale-[1.01]" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/35 to-black/15" />
 
@@ -92,7 +92,7 @@ export default function Home() {
 
       {/* ═══ CATEGORIES ═══ */}
       <section className="pt-6 pb-20 lg:pb-28">
-        <div className="max-w-[1400px] mx-auto px-5 sm:px-6">
+        <div className="max-w-[1260px] mx-auto px-5 sm:px-6">
           <Reveal>
             <div className="mb-10">
               <p className="text-[#1B6B4A] text-[13px] font-semibold tracking-[0.2em] uppercase mb-2">Kategorier</p>
@@ -122,7 +122,7 @@ export default function Home() {
 
       {/* ═══ SENESTE MASKINER ═══ */}
       <section className="py-20 lg:py-28 bg-[#F5F5F3]">
-        <div className="max-w-[1400px] mx-auto px-5 sm:px-6">
+        <div className="max-w-[1260px] mx-auto px-5 sm:px-6">
           <Reveal>
             <div className="flex items-end justify-between mb-10">
               <div>
@@ -169,7 +169,7 @@ export default function Home() {
 
       {/* ═══ STATS ═══ */}
       <section className="py-20 lg:py-24 bg-white">
-        <div className="max-w-[1400px] mx-auto px-5 sm:px-6">
+        <div className="max-w-[1260px] mx-auto px-5 sm:px-6">
           <div className="flex flex-wrap justify-center gap-16 lg:gap-32">
             {[
               { value: `${machines.length || 57}+`, label: 'Maskiner på lager' },
@@ -189,7 +189,7 @@ export default function Home() {
 
       {/* ═══ OM OS ═══ */}
       <section className="py-20 lg:py-28 bg-[#F5F5F3]">
-        <div className="max-w-[1400px] mx-auto px-5 sm:px-6">
+        <div className="max-w-[1260px] mx-auto px-5 sm:px-6">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             <Reveal>
               <div className="aspect-[4/3] rounded-xl overflow-hidden">
@@ -227,7 +227,7 @@ export default function Home() {
       {/* ═══ CTA ═══ */}
       <section className="py-20 lg:py-28 bg-[#141414] relative overflow-hidden">
         <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
-        <div className="max-w-[1400px] mx-auto px-5 sm:px-6 text-center relative">
+        <div className="max-w-[1260px] mx-auto px-5 sm:px-6 text-center relative">
           <Reveal>
             <h2 className="text-[34px] lg:text-[48px] font-bold text-white mb-5 leading-tight">
               Klar til at finde din næste maskine?
