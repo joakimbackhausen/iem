@@ -135,7 +135,7 @@ export default function SpareParts() {
 
       {/* Brands — first, open by default */}
       <CollapsibleSection title="Mærke" defaultOpen={true}>
-        <div className="space-y-0.5">
+        <div className="space-y-0.5 max-h-[280px] overflow-y-auto scrollbar-thin pr-1">
           <button
             onClick={() => { setSelectedBrand(null); setMobileSidebar(false); }}
             className={`w-full text-left px-3 py-2 rounded-lg text-[14px] font-medium transition-colors ${
