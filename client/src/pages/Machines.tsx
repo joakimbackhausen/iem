@@ -100,7 +100,7 @@ export default function Machines() {
 
       <main className="flex-1" style={{ paddingTop: 'var(--header-h, 124px)' }}>
         {/* Top bar - flush with header bottom */}
-        <div className="bg-white border-b border-gray-100 sticky z-[45]" style={{ top: 'var(--header-h, 124px)' }}>
+        <div className="bg-white border-b border-gray-100 sticky z-[45] -mt-px" style={{ top: 'calc(var(--header-h, 124px) - 1px)' }}>
           <div className="max-w-[1260px] mx-auto px-5 sm:px-6 py-3.5">
             <div className="flex flex-wrap items-center gap-3">
               <h1 className="text-[20px] font-bold text-gray-900 mr-2">
