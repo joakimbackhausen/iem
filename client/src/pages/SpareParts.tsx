@@ -146,7 +146,7 @@ export default function SpareParts() {
       </CollapsibleSection>
 
       {/* Brands */}
-      <CollapsibleSection title="Mærke" defaultOpen={true}>
+      <CollapsibleSection title="Mærke" defaultOpen={false}>
         <div className="space-y-0.5">
           <button
             onClick={() => { setSelectedBrand(null); setMobileSidebar(false); }}
