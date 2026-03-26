@@ -34,7 +34,7 @@ export default function Header() {
   return (
     <div ref={wrapperRef} className="fixed top-0 left-0 right-0 z-50">
       {/* ── Top bar ── */}
-      <div className="bg-white border-b border-gray-200 hidden lg:block">
+      <div className="bg-white hidden lg:block" style={{ borderBottom: '0.7px solid #e5e7eb' }}>
         <div className="px-6 xl:px-10">
           <div className="flex items-center justify-between h-11 text-[14px]">
             <div className="flex items-center gap-7">
