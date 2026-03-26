@@ -3,6 +3,7 @@ import { Link, useParams, useLocation } from 'wouter';
 import { Loader2, X, ChevronDown, Search } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { getCategoryIcon } from '@/components/CategoryIcons';
 
 interface Category { id: string; tid: string; name: string; }
 interface Machine {
@@ -206,29 +207,28 @@ export default function Machines() {
                   <p className="text-[12px] text-gray-400 mt-0.5">{machines.length}</p>
                 </div>
               </Link>
-              {topCategories.map((cat) => (
-                <Link
-                  key={cat.id}
-                  href={selectedCategory === cat.id ? '/maskiner' : `/maskiner/${cat.id}`}
-                  className="flex flex-col items-center gap-2 flex-shrink-0 group"
-                >
-                  <div className={`w-[80px] h-[80px] sm:w-[92px] sm:h-[92px] rounded-full overflow-hidden border-[3px] transition-all duration-200 ${
-                    selectedCategory === cat.id
-                      ? 'border-[#FFF100] shadow-lg shadow-[#FFF100]/20 scale-105'
-                      : 'border-gray-200 group-hover:border-[#FFF100]/50'
-                  }`}>
-                    {cat.image ? (
-                      <img src={cat.image} alt={cat.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full bg-gray-100" />
-                    )}
-                  </div>
-                  <div className="text-center">
-                    <p className={`text-[13px] font-semibold leading-tight ${selectedCategory === cat.id ? 'text-[#1a1a1a]' : 'text-gray-500'}`}>{cat.name}</p>
-                    <p className="text-[12px] text-gray-400 mt-0.5">{cat.count}</p>
-                  </div>
-                </Link>
-              ))}
+              {topCategories.map((cat) => {
+                const IconComponent = getCategoryIcon(cat.name);
+                return (
+                  <Link
+                    key={cat.id}
+                    href={selectedCategory === cat.id ? '/maskiner' : `/maskiner/${cat.id}`}
+                    className="flex flex-col items-center gap-2 flex-shrink-0 group"
+                  >
+                    <div className={`w-[80px] h-[80px] sm:w-[92px] sm:h-[92px] rounded-full overflow-hidden border-[3px] transition-all duration-200 flex items-center justify-center bg-white ${
+                      selectedCategory === cat.id
+                        ? 'border-[#FFF100] shadow-lg shadow-[#FFF100]/20 scale-105'
+                        : 'border-gray-200 group-hover:border-[#FFF100]/50'
+                    }`}>
+                      <IconComponent className="w-10 h-10 sm:w-11 sm:h-11 text-[#1a1a1a]" />
+                    </div>
+                    <div className="text-center">
+                      <p className={`text-[13px] font-semibold leading-tight ${selectedCategory === cat.id ? 'text-[#1a1a1a]' : 'text-gray-500'}`}>{cat.name}</p>
+                      <p className="text-[12px] text-gray-400 mt-0.5">{cat.count}</p>
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           </div>
         )}
