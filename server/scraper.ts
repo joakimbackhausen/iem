@@ -21,6 +21,7 @@ interface Machine {
   contact: string;
   address: string;
   extra_parameters: Record<string, { name: string; value: string }>;
+  printUrl: string;
 }
 
 // ── Cache ──
@@ -133,6 +134,7 @@ function parseListPage(html: string): Machine[] {
       contact: "Peter Holm",
       address: "Vesterbro 73, DK-8970 Havndal",
       extra_parameters: {},
+      printUrl: "",
     });
     machineId++;
   });
@@ -160,9 +162,11 @@ async function enrichWithDetails(machine: Machine): Promise<Machine> {
     });
     if (pictures.length > 0) machine.pictures = pictures;
 
-    // Also upgrade the list thumbnail to hi-res
-    if (machine.pictures.length === 0 && pictures.length === 0) {
-      // Keep existing
+    // Extract print URL for PDF spec sheet
+    const printLink = $("a[href*='extPrint']").attr("href") || "";
+    if (printLink) {
+      const base = new URL(machine.url);
+      machine.printUrl = printLink.startsWith("http") ? printLink : `${base.origin}${printLink.startsWith("/") ? "" : "/eksterne/"}${printLink}`;
     }
   } catch {
     // Ignore

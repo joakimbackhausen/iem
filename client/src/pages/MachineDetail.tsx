@@ -29,6 +29,7 @@ interface Machine {
   contact: string;
   address: string;
   extra_parameters: Record<string, { name: string; value: string }>;
+  printUrl?: string;
 }
 
 function formatPrice(price: string): string {
@@ -325,17 +326,30 @@ export default function MachineDetail() {
                 </p>
               </div>
 
-              {machine.url && (
-                <a
-                  href={machine.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-[#1a1a1a] hover:underline text-[14px] font-medium"
-                >
-                  <ExternalLink className="w-4 h-4" />
-                  Se annonce på altimaskiner.dk
-                </a>
-              )}
+              <div className="flex flex-wrap items-center gap-4">
+                {machine.printUrl && (
+                  <a
+                    href={machine.printUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 bg-[#1a1a1a] text-white hover:bg-[#333] rounded-lg px-5 py-2.5 text-[14px] font-medium transition-colors"
+                  >
+                    <FileText className="w-4 h-4" />
+                    Se PDF opstilling
+                  </a>
+                )}
+                {machine.url && (
+                  <a
+                    href={machine.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-[#1a1a1a] hover:underline text-[14px] font-medium"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    Se annonce på altimaskiner.dk
+                  </a>
+                )}
+              </div>
             </div>
           </div>
 
