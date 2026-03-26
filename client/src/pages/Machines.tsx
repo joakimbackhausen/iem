@@ -3,6 +3,7 @@ import { Link, useParams, useLocation } from 'wouter';
 import { Loader2, X, ChevronDown, Search } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import SmartImage from '@/components/SmartImage';
 
 interface Category { id: string; tid: string; name: string; }
 interface Machine {
@@ -218,7 +219,7 @@ export default function Machines() {
                       : 'border-gray-200 group-hover:border-[#FFF100]/50'
                   }`}>
                     {cat.image ? (
-                      <img src={cat.image} alt={cat.name} className="w-full h-full object-cover scale-125" />
+                      <SmartImage src={cat.image} alt={cat.name} className="w-full h-full object-cover" scaleOnWhitespace="scale-125" />
                     ) : (
                       <div className="w-full h-full bg-gray-100" />
                     )}
@@ -245,8 +246,8 @@ export default function Machines() {
                     <div className="bg-white rounded-xl overflow-hidden border border-gray-100 hover:border-[#FFF100]/30 hover:shadow-lg transition-all duration-300">
                       <div className="aspect-[4/3] relative overflow-hidden bg-gray-100">
                         {machine.pictures?.[0]?.url ? (
-                          <img src={machine.pictures[0].url} alt={machine.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+                          <SmartImage src={machine.pictures[0].url} alt={machine.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" scaleOnWhitespace="scale-125 group-hover:scale-130" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-gray-300 text-[14px]">Ingen billede</div>
                         )}

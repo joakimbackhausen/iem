@@ -3,6 +3,7 @@ import { Link } from 'wouter';
 import { Loader2, ArrowRight, Phone, ChevronRight, ArrowUpRight } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import SmartImage from '@/components/SmartImage';
 
 interface Machine {
   id: number; title: string; model: string; brand: string; year: string;
@@ -143,7 +144,7 @@ export default function Home() {
                     <div className="bg-white rounded-xl overflow-hidden hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-500">
                       <div className="aspect-[4/3] relative overflow-hidden">
                         {m.pictures?.[0]?.url ? (
-                          <img src={m.pictures[0].url} alt={m.title} className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-[800ms] ease-out" loading="lazy" />
+                          <SmartImage src={m.pictures[0].url} alt={m.title} className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-[800ms] ease-out" scaleOnWhitespace="scale-125 group-hover:scale-[1.3]" />
                         ) : <div className="w-full h-full bg-gray-100" />}
                       </div>
                       <div className="p-4">
