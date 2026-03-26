@@ -11,23 +11,23 @@ function formatPrice(price: number): string {
 
 type SortOption = 'default' | 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc';
 
-// Brand logo mapping
+// Brand logo mapping — using Google favicon service as reliable fallback
 const brandLogos: Record<string, string> = {
-  'Eurocomach': 'https://www.eurocomach.com/wp-content/uploads/2020/04/logo-eurocomach.png',
-  'Neomach': '',
-  'Ford/New Holland': 'https://logo.clearbit.com/newholland.com',
-  'New Holland': 'https://logo.clearbit.com/newholland.com',
-  'Case': 'https://logo.clearbit.com/casece.com',
-  'Venieri': 'https://logo.clearbit.com/venieri.com',
+  'Eurocomach': 'https://www.google.com/s2/favicons?domain=eurocomach.com&sz=64',
+  'Neomach': 'https://www.google.com/s2/favicons?domain=neomach.com&sz=64',
+  'Ford/New Holland': 'https://www.google.com/s2/favicons?domain=newholland.com&sz=64',
+  'New Holland': 'https://www.google.com/s2/favicons?domain=newholland.com&sz=64',
+  'Case': 'https://www.google.com/s2/favicons?domain=casece.com&sz=64',
+  'Venieri': 'https://www.google.com/s2/favicons?domain=venieri.com&sz=64',
   'Universal': '',
-  'BKT': 'https://logo.clearbit.com/bfribo.com',
-  'Galaxy': 'https://logo.clearbit.com/yokohama-oht.com',
-  'ITR': 'https://logo.clearbit.com/itrusa.com',
-  'Parker': 'https://logo.clearbit.com/parker.com',
-  'Faster': 'https://logo.clearbit.com/fastercouplings.com',
-  'Mann': 'https://logo.clearbit.com/mann-filter.com',
-  'Q8': 'https://logo.clearbit.com/q8oils.com',
-  'CRC': 'https://logo.clearbit.com/crcindustries.com',
+  'BKT': 'https://www.google.com/s2/favicons?domain=bfribo.com&sz=64',
+  'Galaxy': 'https://www.google.com/s2/favicons?domain=yokohama-oht.com&sz=64',
+  'ITR': 'https://www.google.com/s2/favicons?domain=itrusa.com&sz=64',
+  'Parker': 'https://www.google.com/s2/favicons?domain=parker.com&sz=64',
+  'Faster': 'https://www.google.com/s2/favicons?domain=fastercouplings.com&sz=64',
+  'Mann': 'https://www.google.com/s2/favicons?domain=mann-filter.com&sz=64',
+  'Q8': 'https://www.google.com/s2/favicons?domain=q8oils.com&sz=64',
+  'CRC': 'https://www.google.com/s2/favicons?domain=crcindustries.com&sz=64',
 };
 
 function CollapsibleSection({ title, defaultOpen = true, children }: { title: string; defaultOpen?: boolean; children: React.ReactNode }) {
