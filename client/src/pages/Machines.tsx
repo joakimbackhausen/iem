@@ -98,9 +98,9 @@ export default function Machines() {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />
 
-      <main className="flex-1 pt-[80px] lg:pt-[124px]">
+      <main className="flex-1" style={{ paddingTop: 'var(--header-h, 124px)' }}>
         {/* Top bar - flush with header bottom */}
-        <div className="bg-white border-b border-gray-100 sticky top-[79px] lg:top-[123px] z-[45]">
+        <div className="bg-white border-b border-gray-100 sticky z-[45]" style={{ top: 'var(--header-h, 124px)' }}>
           <div className="max-w-[1260px] mx-auto px-5 sm:px-6 py-3.5">
             <div className="flex flex-wrap items-center gap-3">
               <h1 className="text-[20px] font-bold text-gray-900 mr-2">

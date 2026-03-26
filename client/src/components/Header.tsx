@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useLocation } from 'wouter';
 import { Menu, X, Phone, Mail, MapPin, Clock } from 'lucide-react';
 
@@ -15,13 +15,33 @@ const navLinks = [
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [location] = useLocation();
+  const topbarRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
+
+  const updateCSSVar = useCallback(() => {
+    const topbarH = topbarRef.current?.getBoundingClientRect().height || 0;
+    const headerH = headerRef.current?.getBoundingClientRect().height || 0;
+    const total = topbarH + headerH;
+    document.documentElement.style.setProperty('--header-h', `${Math.round(total)}px`);
+    document.documentElement.style.setProperty('--topbar-h', `${Math.round(topbarH)}px`);
+  }, []);
+
+  useEffect(() => {
+    updateCSSVar();
+    window.addEventListener('resize', updateCSSVar);
+    // Re-measure after fonts load
+    if (document.fonts?.ready) {
+      document.fonts.ready.then(updateCSSVar);
+    }
+    return () => window.removeEventListener('resize', updateCSSVar);
+  }, [updateCSSVar]);
 
   return (
     <>
       {/* ── Top bar ── */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-white hidden lg:block h-11">
-        <div className="px-6 xl:px-10 h-full">
-          <div className="flex items-center justify-between h-full text-[14px]">
+      <div ref={topbarRef} className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100 hidden lg:block">
+        <div className="px-6 xl:px-10">
+          <div className="flex items-center justify-between h-11 text-[14px]">
             <div className="flex items-center gap-7">
               <a href="tel:+4586470388" className="flex items-center gap-2 text-[#1A1A1A] hover:text-[#1B6B4A] transition-colors">
                 <Phone className="w-4 h-4" /> +45 86 47 03 88
@@ -41,9 +61,9 @@ export default function Header() {
       </div>
 
       {/* ── Main header ── */}
-      <header className="fixed top-0 lg:top-[44px] left-0 right-0 z-50 bg-white shadow-[0_1px_0_0_rgba(0,0,0,0.05)] h-[80px]">
-        <div className="px-4 sm:px-6 xl:px-10 h-full">
-          <div className="flex items-center justify-between h-full">
+      <header ref={headerRef} className="fixed left-0 right-0 z-50 bg-white border-b border-gray-100" style={{ top: 'var(--topbar-h, 0px)' }}>
+        <div className="px-4 sm:px-6 xl:px-10">
+          <div className="flex items-center justify-between h-[80px]">
             <Link href="/" className="flex items-center">
               <img src="/images/iem-logo.png" alt="IEM" className="h-16 w-auto" />
             </Link>
