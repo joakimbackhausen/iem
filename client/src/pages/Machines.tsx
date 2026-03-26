@@ -99,7 +99,7 @@ export default function Machines() {
       <Header />
 
       {/* Fixed filter bar - directly attached to header */}
-      <div className="fixed left-0 right-0 z-[45] bg-white border-y border-gray-200 -mt-px" style={{ top: 'var(--header-h, 124px)' }}>
+      <div className="fixed left-0 right-0 z-[45] bg-white" style={{ top: 'var(--header-h, 124px)', borderTop: '0.7px solid #e5e7eb', borderBottom: '0.7px solid #e5e7eb' }}>
           <div className="max-w-[1260px] mx-auto px-5 sm:px-6 py-3.5">
             <div className="flex flex-wrap items-center gap-3">
               <h1 className="text-[20px] font-bold text-gray-900 mr-2">
