@@ -53,7 +53,7 @@ export default function Home() {
   const heroCategories = [
     { title: 'Entreprenørmaskiner', desc: 'Minigravere, hjullæssere og meget mere', image: '/images/minigraver.jpg', href: '/maskiner/entreprenoermaskiner' },
     { title: 'Brugte maskiner', desc: 'Over 50 maskiner på lager — klar til levering', image: machines[0]?.pictures?.[0]?.url || '/images/hero.jpg', href: '/maskiner' },
-    { title: 'Service & reservedele', desc: 'Eget værksted med erfarne mekanikere', image: '/images/hero.jpg', href: '/' },
+    { title: 'Reservedele & tilbehør', desc: 'Originale og universelle dele — levering 1-2 dage', image: '/images/hero.jpg', href: '/reservedele' },
   ];
 
   return (

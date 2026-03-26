@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Home from "@/pages/Home";
 import Machines from "@/pages/Machines";
 import MachineDetail from "@/pages/MachineDetail";
+import SpareParts from "@/pages/SpareParts";
 
 function Router() {
   return (
@@ -13,6 +14,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/maskiner/:kategori?" component={Machines} />
       <Route path="/maskine/:id" component={MachineDetail} />
+      <Route path="/reservedele/:kategori?" component={SpareParts} />
       <Route component={Home} />
     </Switch>
   );

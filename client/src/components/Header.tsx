@@ -4,6 +4,7 @@ import { Menu, X, Phone, Mail, MapPin, Clock } from 'lucide-react';
 
 const navLinks = [
   { label: 'Maskiner', href: '/maskiner' },
+  { label: 'Reservedele', href: '/reservedele' },
   { label: 'Nye maskiner', href: '/' },
   { label: 'Service', href: '/' },
   { label: 'Finansiering', href: '/' },

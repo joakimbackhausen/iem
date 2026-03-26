@@ -18,6 +18,7 @@ export default function Footer() {
             <div className="space-y-3">
               {[
                 { label: 'Maskiner til salg', href: '/maskiner' },
+                { label: 'Reservedele', href: '/reservedele' },
                 { label: 'Nye maskiner', href: '/' },
                 { label: 'Service', href: '/' },
                 { label: 'Finansiering', href: '/' },
