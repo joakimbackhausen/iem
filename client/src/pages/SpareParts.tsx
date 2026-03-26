@@ -209,7 +209,7 @@ export default function SpareParts() {
                 {filtered.map(part => (
                   <div key={part.id} className="group bg-white rounded-xl overflow-hidden border border-gray-100 hover:border-[#FFF100]/30 hover:shadow-lg transition-all duration-300">
                     {/* Placeholder image */}
-                    <div className="aspect-[4/3] relative overflow-hidden bg-gradient-to-br from-gray-100 to-gray-50 flex items-center justify-center">
+                    <div className="aspect-[4/3] relative overflow-hidden bg-white flex items-center justify-center">
                       <Package className="w-12 h-12 text-gray-200 group-hover:text-gray-300 transition-colors" />
                       {!part.inStock && (
                         <div className="absolute top-3 left-3 bg-[#1a1a1a]/80 text-white text-[12px] font-medium px-3 py-1 rounded-lg backdrop-blur-sm">
