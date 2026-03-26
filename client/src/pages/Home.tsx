@@ -4,6 +4,7 @@ import { Loader2, ArrowRight, Phone, ChevronRight, ArrowUpRight } from 'lucide-r
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SmartImage from '@/components/SmartImage';
+import { machineSlug } from '@/lib/machineSlug';
 
 interface Machine {
   id: number; title: string; model: string; brand: string; year: string;
@@ -140,7 +141,7 @@ export default function Home() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
               {machines.slice(0, 8).map((m, i) => (
                 <Reveal key={m.id} delay={i * 50}>
-                  <Link href={`/maskine/${m.id}`} className="group block">
+                  <Link href={`/maskine/${machineSlug(m.id, m.title)}`} className="group block">
                     <div className="bg-white rounded-xl overflow-hidden hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-500">
                       <div className="aspect-[4/3] relative overflow-hidden">
                         {m.pictures?.[0]?.url ? (

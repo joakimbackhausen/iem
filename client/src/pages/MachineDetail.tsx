@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'wouter';
 import {
   Loader2, ArrowLeft, Phone, Mail, ChevronLeft, ChevronRight,
-  ExternalLink, ChevronUp, ChevronDown, Settings, Ruler, Info,
+  ChevronUp, ChevronDown, Settings, Ruler, Info,
   FileText, Tag, Calendar, Wrench, Gauge, Weight, Box
 } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { machineIdFromSlug } from '@/lib/machineSlug';
 
 interface Category {
   id: string;
@@ -105,7 +106,8 @@ export default function MachineDetail() {
           throw new Error('Kunne ikke hente maskindata');
         }
         const data = await response.json();
-        const found = data.find((m: Machine) => m.id.toString() === params.id);
+        const machineId = machineIdFromSlug(params.id || '');
+        const found = data.find((m: Machine) => m.id === machineId);
         if (found) {
           setMachine(found);
           document.title = `${found.brand} ${found.model} - Ib E. Mortensen A/S`;
@@ -326,30 +328,17 @@ export default function MachineDetail() {
                 </p>
               </div>
 
-              <div className="flex flex-wrap items-center gap-4">
-                {machine.printUrl && (
-                  <a
-                    href={machine.printUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 bg-[#1a1a1a] text-white hover:bg-[#333] rounded-lg px-5 py-2.5 text-[14px] font-medium transition-colors"
-                  >
-                    <FileText className="w-4 h-4" />
-                    Se PDF opstilling
-                  </a>
-                )}
-                {machine.url && (
-                  <a
-                    href={machine.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-[#1a1a1a] hover:underline text-[14px] font-medium"
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                    Se annonce på altimaskiner.dk
-                  </a>
-                )}
-              </div>
+              {machine.printUrl && (
+                <a
+                  href={machine.printUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 bg-[#1a1a1a] text-white hover:bg-[#333] rounded-lg px-5 py-2.5 text-[14px] font-medium transition-colors"
+                >
+                  <FileText className="w-4 h-4" />
+                  Se PDF opstilling
+                </a>
+              )}
             </div>
           </div>
 

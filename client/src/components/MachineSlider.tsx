@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'wouter';
 import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import useEmblaCarousel from 'embla-carousel-react';
+import { machineSlug } from '@/lib/machineSlug';
 
 interface Machine {
   id: number;
@@ -59,7 +60,7 @@ export default function MachineSlider({ machines }: { machines: Machine[] }) {
               className="flex-none w-[280px] sm:w-[310px] lg:w-[340px]"
             >
               <Link
-                href={`/maskine/${machine.id}`}
+                href={`/maskine/${machineSlug(machine.id, machine.title)}`}
                 className="group block bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:shadow-black/8 transition-all duration-500 hover:-translate-y-1"
               >
                 <div className="aspect-[4/3] relative overflow-hidden bg-gray-100">

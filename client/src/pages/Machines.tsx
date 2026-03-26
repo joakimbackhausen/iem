@@ -4,6 +4,7 @@ import { Loader2, X, ChevronDown, Search } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SmartImage from '@/components/SmartImage';
+import { machineSlug } from '@/lib/machineSlug';
 
 interface Category { id: string; tid: string; name: string; }
 interface Machine {
@@ -195,7 +196,7 @@ export default function Machines() {
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                 {filtered.map(machine => (
-                  <Link key={machine.id} href={`/maskine/${machine.id}`} className="group block">
+                  <Link key={machine.id} href={`/maskine/${machineSlug(machine.id, machine.title)}`} className="group block">
                     <div className="bg-white rounded-xl overflow-hidden border border-gray-100 hover:border-[#FFF100]/30 hover:shadow-lg transition-all duration-300">
                       <div className="aspect-[4/3] relative overflow-hidden bg-gray-100">
                         {machine.pictures?.[0]?.url ? (
