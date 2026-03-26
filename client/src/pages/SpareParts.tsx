@@ -239,9 +239,8 @@ export default function SpareParts() {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />
 
-      <main className="flex-1" style={{ paddingTop: 'var(--header-h, 124px)' }}>
-        {/* Top bar - flush with header bottom */}
-        <div className="bg-white border-b border-gray-100 sticky z-[45] -mt-px" style={{ top: 'calc(var(--header-h, 124px) - 3px)' }}>
+      {/* Fixed filter bar - directly attached to header */}
+      <div className="fixed left-0 right-0 z-[45] bg-white border-b border-gray-100" style={{ top: 'var(--header-h, 124px)' }}>
           <div className="max-w-[1260px] mx-auto px-5 sm:px-6 py-3.5">
             <div className="flex items-center gap-3">
               <h1 className="text-[20px] font-bold text-gray-900">
@@ -290,8 +289,9 @@ export default function SpareParts() {
               <span className="ml-auto text-[14px] text-gray-400">{filtered.length} produkter</span>
             </div>
           </div>
-        </div>
+      </div>
 
+      <main className="flex-1" style={{ paddingTop: 'calc(var(--header-h, 124px) + 56px)' }}>
         {/* Mobile sidebar overlay */}
         {mobileSidebar && (
           <div className="lg:hidden fixed inset-0 z-50">
