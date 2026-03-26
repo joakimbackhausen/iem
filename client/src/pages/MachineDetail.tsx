@@ -328,17 +328,6 @@ export default function MachineDetail() {
                 </p>
               </div>
 
-              {machine.printUrl && (
-                <a
-                  href={machine.printUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 bg-[#1a1a1a] text-white hover:bg-[#333] rounded-lg px-5 py-2.5 text-[14px] font-medium transition-colors"
-                >
-                  <FileText className="w-4 h-4" />
-                  Se PDF opstilling
-                </a>
-              )}
             </div>
           </div>
 
