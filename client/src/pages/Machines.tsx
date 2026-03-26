@@ -218,7 +218,7 @@ export default function Machines() {
                       : 'border-gray-200 group-hover:border-[#FFF100]/50'
                   }`}>
                     {cat.image ? (
-                      <img src={cat.image} alt={cat.name} className="w-full h-full object-cover scale-110" />
+                      <img src={cat.image} alt={cat.name} className="w-full h-full object-cover scale-125" />
                     ) : (
                       <div className="w-full h-full bg-gray-100" />
                     )}
