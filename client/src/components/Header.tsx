@@ -39,7 +39,7 @@ export default function Header() {
   return (
     <>
       {/* ── Top bar ── */}
-      <div ref={topbarRef} className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100 hidden lg:block">
+      <div ref={topbarRef} className="fixed top-0 left-0 right-0 z-50 bg-white hidden lg:block">
         <div className="px-6 xl:px-10">
           <div className="flex items-center justify-between h-11 text-[14px]">
             <div className="flex items-center gap-7">
