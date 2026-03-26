@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link, useParams, useLocation } from 'wouter';
-import { Search, X, Phone, Package, ChevronDown } from 'lucide-react';
+import { Search, X, Phone, Package, ChevronDown, ChevronUp, ArrowUpDown } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { spareParts, sparePartCategories } from '@/data/sparePartsData';
@@ -9,13 +9,34 @@ function formatPrice(price: number): string {
   return price.toLocaleString('da-DK') + ' kr';
 }
 
+type SortOption = 'default' | 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc';
+
+function CollapsibleSection({ title, defaultOpen = true, children }: { title: string; defaultOpen?: boolean; children: React.ReactNode }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="mb-5">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between mb-2 group"
+      >
+        <h3 className="text-[13px] font-semibold text-gray-400 uppercase tracking-wider group-hover:text-gray-600 transition-colors">{title}</h3>
+        {open ? <ChevronUp className="w-4 h-4 text-gray-300" /> : <ChevronDown className="w-4 h-4 text-gray-300" />}
+      </button>
+      <div className={`overflow-hidden transition-all duration-300 ease-in-out ${open ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
 export default function SpareParts() {
   const params = useParams<{ kategori?: string }>();
   const [, navigate] = useLocation();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
-  const [showBrandDrop, setShowBrandDrop] = useState(false);
   const [mobileSidebar, setMobileSidebar] = useState(false);
+  const [sortBy, setSortBy] = useState<SortOption>('default');
+  const [showSortDrop, setShowSortDrop] = useState(false);
 
   const selectedCategory = params.kategori || null;
 
@@ -42,26 +63,45 @@ export default function SpareParts() {
     return Array.from(map.entries()).sort((a, b) => b[1] - a[1]).map(([b, c]) => ({ brand: b, count: c }));
   }, [selectedCategory]);
 
-  const filtered = useMemo(() => spareParts.filter(p => {
-    if (selectedCategory && p.categorySlug !== selectedCategory) return false;
-    if (selectedBrand && p.brand !== selectedBrand) return false;
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      if (!p.title.toLowerCase().includes(q) && !p.brand.toLowerCase().includes(q) && !p.description.toLowerCase().includes(q) && !p.sku.toLowerCase().includes(q)) return false;
+  const filtered = useMemo(() => {
+    let results = spareParts.filter(p => {
+      if (selectedCategory && p.categorySlug !== selectedCategory) return false;
+      if (selectedBrand && p.brand !== selectedBrand) return false;
+      if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        if (!p.title.toLowerCase().includes(q) && !p.brand.toLowerCase().includes(q) && !p.description.toLowerCase().includes(q) && !p.sku.toLowerCase().includes(q)) return false;
+      }
+      return true;
+    });
+
+    // Sort
+    switch (sortBy) {
+      case 'price-asc': results = [...results].sort((a, b) => a.price - b.price); break;
+      case 'price-desc': results = [...results].sort((a, b) => b.price - a.price); break;
+      case 'name-asc': results = [...results].sort((a, b) => a.title.localeCompare(b.title, 'da')); break;
+      case 'name-desc': results = [...results].sort((a, b) => b.title.localeCompare(a.title, 'da')); break;
     }
-    return true;
-  }), [selectedCategory, selectedBrand, searchQuery]);
+    return results;
+  }, [selectedCategory, selectedBrand, searchQuery, sortBy]);
 
   const selectedCatObj = categoriesWithCounts.find(c => c.slug === selectedCategory);
   const hasFilters = selectedCategory || selectedBrand || searchQuery;
 
-  const clearAll = () => { navigate('/reservedele'); setSelectedBrand(null); setSearchQuery(''); };
+  const clearAll = () => { navigate('/reservedele'); setSelectedBrand(null); setSearchQuery(''); setSortBy('default'); };
+
+  const sortLabels: Record<SortOption, string> = {
+    'default': 'Standard',
+    'price-asc': 'Pris: lav → høj',
+    'price-desc': 'Pris: høj → lav',
+    'name-asc': 'Navn: A → Å',
+    'name-desc': 'Navn: Å → A',
+  };
 
   // Sidebar content (reused for mobile + desktop)
   const sidebarContent = (
     <>
       {/* Search */}
-      <div className="mb-6">
+      <div className="mb-5">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
@@ -75,12 +115,11 @@ export default function SpareParts() {
       </div>
 
       {/* Categories */}
-      <div className="mb-6">
-        <h3 className="text-[13px] font-semibold text-gray-400 uppercase tracking-wider mb-3">Kategorier</h3>
+      <CollapsibleSection title="Kategorier" defaultOpen={true}>
         <div className="space-y-0.5">
           <button
             onClick={() => { navigate('/reservedele'); setMobileSidebar(false); }}
-            className={`w-full text-left px-3 py-2.5 rounded-lg text-[14px] font-medium transition-colors ${
+            className={`w-full text-left px-3 py-2 rounded-lg text-[14px] font-medium transition-colors ${
               !selectedCategory ? 'bg-[#FFF100]/10 text-[#1a1a1a] font-semibold' : 'text-gray-600 hover:bg-gray-50'
             }`}
           >
@@ -93,7 +132,7 @@ export default function SpareParts() {
             <button
               key={cat.slug}
               onClick={() => { navigate(selectedCategory === cat.slug ? '/reservedele' : `/reservedele/${cat.slug}`); setMobileSidebar(false); }}
-              className={`w-full text-left px-3 py-2.5 rounded-lg text-[14px] font-medium transition-colors ${
+              className={`w-full text-left px-3 py-2 rounded-lg text-[14px] font-medium transition-colors ${
                 selectedCategory === cat.slug ? 'bg-[#FFF100]/10 text-[#1a1a1a] font-semibold' : 'text-gray-600 hover:bg-gray-50'
               }`}
             >
@@ -104,15 +143,14 @@ export default function SpareParts() {
             </button>
           ))}
         </div>
-      </div>
+      </CollapsibleSection>
 
       {/* Brands */}
-      <div className="mb-6">
-        <h3 className="text-[13px] font-semibold text-gray-400 uppercase tracking-wider mb-3">Mærke</h3>
+      <CollapsibleSection title="Mærke" defaultOpen={true}>
         <div className="space-y-0.5">
           <button
             onClick={() => { setSelectedBrand(null); setMobileSidebar(false); }}
-            className={`w-full text-left px-3 py-2.5 rounded-lg text-[14px] font-medium transition-colors ${
+            className={`w-full text-left px-3 py-2 rounded-lg text-[14px] font-medium transition-colors ${
               !selectedBrand ? 'bg-[#FFF100]/10 text-[#1a1a1a] font-semibold' : 'text-gray-600 hover:bg-gray-50'
             }`}
           >
@@ -122,7 +160,7 @@ export default function SpareParts() {
             <button
               key={b.brand}
               onClick={() => { setSelectedBrand(selectedBrand === b.brand ? null : b.brand); setMobileSidebar(false); }}
-              className={`w-full text-left px-3 py-2.5 rounded-lg text-[14px] font-medium transition-colors ${
+              className={`w-full text-left px-3 py-2 rounded-lg text-[14px] font-medium transition-colors ${
                 selectedBrand === b.brand ? 'bg-[#FFF100]/10 text-[#1a1a1a] font-semibold' : 'text-gray-600 hover:bg-gray-50'
               }`}
             >
@@ -133,7 +171,24 @@ export default function SpareParts() {
             </button>
           ))}
         </div>
-      </div>
+      </CollapsibleSection>
+
+      {/* Sort */}
+      <CollapsibleSection title="Sortering" defaultOpen={false}>
+        <div className="space-y-0.5">
+          {(Object.keys(sortLabels) as SortOption[]).map(key => (
+            <button
+              key={key}
+              onClick={() => { setSortBy(key); setMobileSidebar(false); }}
+              className={`w-full text-left px-3 py-2 rounded-lg text-[14px] font-medium transition-colors ${
+                sortBy === key ? 'bg-[#FFF100]/10 text-[#1a1a1a] font-semibold' : 'text-gray-600 hover:bg-gray-50'
+              }`}
+            >
+              {sortLabels[key]}
+            </button>
+          ))}
+        </div>
+      </CollapsibleSection>
 
       {hasFilters && (
         <button onClick={() => { clearAll(); setMobileSidebar(false); }}
@@ -164,6 +219,30 @@ export default function SpareParts() {
               >
                 Filtrer <ChevronDown className="w-4 h-4" />
               </button>
+
+              {/* Sort dropdown (top bar, for quick access) */}
+              <div className="relative hidden sm:block">
+                <button
+                  onClick={() => setShowSortDrop(!showSortDrop)}
+                  className="flex items-center gap-2 text-[14px] font-medium text-[#1A1A1A] border border-gray-200 rounded-lg px-4 py-2.5 hover:bg-gray-50 transition-colors"
+                >
+                  <ArrowUpDown className="w-3.5 h-3.5" />
+                  {sortLabels[sortBy]}
+                  <ChevronDown className="w-4 h-4" />
+                </button>
+                {showSortDrop && (
+                  <div className="absolute top-full left-0 mt-1 w-52 bg-white rounded-lg shadow-lg border border-gray-100 z-50">
+                    <div className="p-1.5">
+                      {(Object.keys(sortLabels) as SortOption[]).map(key => (
+                        <button key={key} onClick={() => { setSortBy(key); setShowSortDrop(false); }}
+                          className={`w-full text-left px-3 py-2.5 rounded-md text-[14px] ${sortBy === key ? 'bg-[#FFF100]/10 font-semibold text-[#1a1a1a]' : 'hover:bg-gray-50 text-gray-600'}`}>
+                          {sortLabels[key]}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
 
               {hasFilters && (
                 <button onClick={clearAll}
