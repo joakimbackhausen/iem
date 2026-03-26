@@ -19,9 +19,9 @@ export default function Header() {
   return (
     <>
       {/* ── Top bar ── */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100 hidden lg:block">
-        <div className="px-6 xl:px-10">
-          <div className="flex items-center justify-between h-11 text-[14px]">
+      <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100 hidden lg:block h-11">
+        <div className="px-6 xl:px-10 h-full">
+          <div className="flex items-center justify-between h-full text-[14px]">
             <div className="flex items-center gap-7">
               <a href="tel:+4586470388" className="flex items-center gap-2 text-[#1A1A1A] hover:text-[#1B6B4A] transition-colors">
                 <Phone className="w-4 h-4" /> +45 86 47 03 88
@@ -41,9 +41,9 @@ export default function Header() {
       </div>
 
       {/* ── Main header ── */}
-      <header className="fixed top-0 lg:top-[45px] left-0 right-0 z-50 bg-white border-b border-gray-100">
-        <div className="px-4 sm:px-6 xl:px-10">
-          <div className="flex items-center justify-between h-[80px]">
+      <header className="fixed top-0 lg:top-[44px] left-0 right-0 z-50 bg-white border-b border-gray-100 h-[80px]">
+        <div className="px-4 sm:px-6 xl:px-10 h-full">
+          <div className="flex items-center justify-between h-full">
             <Link href="/" className="flex items-center">
               <img src="/images/iem-logo.png" alt="IEM" className="h-16 w-auto" />
             </Link>
