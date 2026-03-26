@@ -15,21 +15,16 @@ const navLinks = [
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [location] = useLocation();
-  const topbarRef = useRef<HTMLDivElement>(null);
-  const headerRef = useRef<HTMLElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   const updateCSSVar = useCallback(() => {
-    const topbarH = topbarRef.current?.getBoundingClientRect().height || 0;
-    const headerH = headerRef.current?.getBoundingClientRect().height || 0;
-    const total = topbarH + headerH;
-    document.documentElement.style.setProperty('--header-h', `${Math.round(total)}px`);
-    document.documentElement.style.setProperty('--topbar-h', `${Math.round(topbarH)}px`);
+    const h = wrapperRef.current?.getBoundingClientRect().height || 0;
+    document.documentElement.style.setProperty('--header-h', `${Math.round(h)}px`);
   }, []);
 
   useEffect(() => {
     updateCSSVar();
     window.addEventListener('resize', updateCSSVar);
-    // Re-measure after fonts load
     if (document.fonts?.ready) {
       document.fonts.ready.then(updateCSSVar);
     }
@@ -37,9 +32,9 @@ export default function Header() {
   }, [updateCSSVar]);
 
   return (
-    <>
+    <div ref={wrapperRef} className="fixed top-0 left-0 right-0 z-50">
       {/* ── Top bar ── */}
-      <div ref={topbarRef} className="fixed top-0 left-0 right-0 z-50 bg-white hidden lg:block">
+      <div className="bg-white border-b border-gray-200 hidden lg:block">
         <div className="px-6 xl:px-10">
           <div className="flex items-center justify-between h-11 text-[14px]">
             <div className="flex items-center gap-7">
@@ -61,7 +56,7 @@ export default function Header() {
       </div>
 
       {/* ── Main header ── */}
-      <header ref={headerRef} className="fixed left-0 right-0 z-50 bg-white border-b border-gray-200" style={{ top: 'var(--topbar-h, 0px)' }}>
+      <header className="bg-white border-b border-gray-200">
         <div className="px-4 sm:px-6 xl:px-10">
           <div className="flex items-center justify-between h-[80px]">
             <Link href="/" className="flex items-center">
@@ -122,6 +117,6 @@ export default function Header() {
           </div>
         )}
       </header>
-    </>
+    </div>
   );
 }
