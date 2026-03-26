@@ -151,7 +151,7 @@ export default function MachineDetail() {
     return (
       <div className="min-h-screen flex flex-col bg-[#f5f5f5]">
         <Header />
-        <main className="flex-1 flex flex-col items-center justify-center gap-4 pt-20 lg:pt-[124px]">
+        <main className="flex-1 flex flex-col items-center justify-center gap-4" style={{ paddingTop: 'var(--header-h, 124px)' }}>
           <p className="text-xl text-gray-500">{error || 'Maskinen blev ikke fundet'}</p>
           <Link
             href="/maskiner"
@@ -176,19 +176,20 @@ export default function MachineDetail() {
     <div className="min-h-screen flex flex-col bg-[#f5f5f5]">
       <Header />
 
-      <main className="flex-1 pt-20 lg:pt-[124px]">
-        {/* Breadcrumb bar */}
-        <div className="bg-white border-b border-gray-100">
-          <div className="max-w-[1224px] mx-auto px-5 sm:px-8 py-3">
-            <Link
-              href="/maskiner"
-              className="inline-flex items-center gap-2 text-[14px] text-gray-500 hover:text-[#1a1a1a] transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Tilbage til maskiner
-            </Link>
-          </div>
+      {/* Fixed breadcrumb bar - directly attached to header */}
+      <div className="fixed left-0 right-0 z-[45] bg-white" style={{ top: 'var(--header-h, 124px)', borderTop: '0.7px solid #e5e7eb', borderBottom: '0.7px solid #e5e7eb' }}>
+        <div className="max-w-[1224px] mx-auto px-5 sm:px-8 py-3">
+          <Link
+            href="/maskiner"
+            className="inline-flex items-center gap-2 text-[14px] text-gray-500 hover:text-[#1a1a1a] transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Tilbage til maskiner
+          </Link>
         </div>
+      </div>
+
+      <main className="flex-1" style={{ paddingTop: 'calc(var(--header-h, 124px) + 48px)' }}>
 
         <div className="max-w-[1224px] mx-auto px-5 sm:px-8 py-8 lg:py-12">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
