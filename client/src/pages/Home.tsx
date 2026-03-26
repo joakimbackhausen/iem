@@ -142,21 +142,23 @@ export default function Home() {
               {machines.slice(0, 8).map((m, i) => (
                 <Reveal key={m.id} delay={i * 50}>
                   <Link href={`/maskine/${machineSlug(m.id, m.title)}`} className="group block">
-                    <div className="bg-white rounded-xl overflow-hidden hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-500">
-                      <div className="aspect-[4/3] relative overflow-hidden">
+                    <div className="bg-white rounded-xl overflow-hidden border border-gray-100 hover:shadow-lg transition-all duration-300">
+                      <div className="aspect-[4/3] relative overflow-hidden bg-gray-100">
                         {m.pictures?.[0]?.url ? (
-                          <SmartImage src={m.pictures[0].url} alt={m.title} className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-[800ms] ease-out" scaleOnWhitespace="scale-125 group-hover:scale-[1.3]" />
+                          <SmartImage src={m.pictures[0].url} alt={m.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" scaleOnWhitespace="scale-125 group-hover:scale-130" />
                         ) : <div className="w-full h-full bg-gray-100" />}
                       </div>
                       <div className="p-4">
-                        <p className="text-[11px] text-[#1B6B4A] font-semibold tracking-[0.1em] uppercase mb-1.5">{m.brand}</p>
-                        <h3 className="text-[16px] font-semibold text-[#1a1a1a] leading-snug mb-3 line-clamp-2">{m.title}</h3>
+                        <p className="text-[11px] text-[#C4A800] font-semibold tracking-[0.1em] uppercase mb-1.5">{m.brand}</p>
+                        <h3 className="text-[15px] font-semibold text-[#1a1a1a] leading-snug mb-3 line-clamp-2">{m.title}</h3>
                         <div className="flex items-end justify-between pt-3 border-t border-gray-100">
                           <div>
-                            <p className="text-[19px] font-bold text-[#1a1a1a] tracking-tight">{formatPrice(m.price)}</p>
+                            <p className="text-[18px] font-bold text-[#1a1a1a] tracking-tight">{formatPrice(m.price)}</p>
                             <p className="text-[11px] text-gray-400 mt-0.5">ekskl. moms</p>
                           </div>
-                          <span className="text-[13px] font-medium text-[#1B6B4A] opacity-0 group-hover:opacity-100 transition-opacity duration-300">Se mere →</span>
+                          <span className="text-[13px] font-semibold text-[#1B6B4A] group-hover:text-[#145A3B] flex items-center gap-1 transition-colors">
+                            Se mere →
+                          </span>
                         </div>
                       </div>
                     </div>
