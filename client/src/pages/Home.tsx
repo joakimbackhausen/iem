@@ -63,7 +63,7 @@ export default function Home() {
 
       {/* ═══ HERO ═══ */}
       <section className="relative">
-        <div className="relative min-h-[85vh] flex items-center justify-center overflow-hidden">
+        <div className="relative min-h-[95vh] flex items-center justify-center overflow-hidden">
           <img src="/images/hero.jpg" alt="" className="absolute inset-0 w-full h-full object-cover scale-[1.01]" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/35 to-black/15" />
 
