@@ -61,7 +61,7 @@ export default function Header() {
       </div>
 
       {/* ── Main header ── */}
-      <header ref={headerRef} className="fixed left-0 right-0 z-50 bg-white border-b border-gray-100" style={{ top: 'var(--topbar-h, 0px)' }}>
+      <header ref={headerRef} className="fixed left-0 right-0 z-50 bg-white border-b border-gray-200" style={{ top: 'var(--topbar-h, 0px)' }}>
         <div className="px-4 sm:px-6 xl:px-10">
           <div className="flex items-center justify-between h-[80px]">
             <Link href="/" className="flex items-center">
