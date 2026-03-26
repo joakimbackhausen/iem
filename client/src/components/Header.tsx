@@ -56,7 +56,7 @@ export default function Header() {
       </div>
 
       {/* ── Main header ── */}
-      <header className="bg-white border-b border-gray-200">
+      <header className="bg-white">
         <div className="px-4 sm:px-6 xl:px-10">
           <div className="flex items-center justify-between h-[80px]">
             <Link href="/" className="flex items-center">

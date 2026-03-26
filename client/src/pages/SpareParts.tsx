@@ -240,7 +240,7 @@ export default function SpareParts() {
       <Header />
 
       {/* Fixed filter bar - directly attached to header */}
-      <div className="fixed left-0 right-0 z-[45] bg-white border-b border-gray-100" style={{ top: 'var(--header-h, 124px)' }}>
+      <div className="fixed left-0 right-0 z-[45] bg-white border-y border-gray-200" style={{ top: 'var(--header-h, 124px)' }}>
           <div className="max-w-[1260px] mx-auto px-5 sm:px-6 py-3.5">
             <div className="flex items-center gap-3">
               <h1 className="text-[20px] font-bold text-gray-900">
