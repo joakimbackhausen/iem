@@ -286,7 +286,7 @@ export default function SpareParts() {
             <div className="flex-1 min-w-0">
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
                 {filtered.map(part => (
-                  <div key={part.id} className="group bg-white rounded-xl overflow-hidden border border-gray-100 hover:border-[#FFF100]/30 hover:shadow-lg transition-all duration-300">
+                  <div key={part.id} className="group bg-white rounded-xl overflow-hidden border border-gray-100 hover:shadow-lg transition-all duration-300">
                     {/* Placeholder image */}
                     <div className="aspect-[4/3] relative overflow-hidden bg-white flex items-center justify-center">
                       <Package className="w-12 h-12 text-gray-200 group-hover:text-gray-300 transition-colors" />
