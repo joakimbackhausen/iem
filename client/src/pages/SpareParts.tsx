@@ -306,7 +306,7 @@ export default function SpareParts() {
           <div className="flex gap-8">
             {/* Desktop sidebar */}
             <aside className="hidden lg:block w-[260px] flex-shrink-0">
-              <div className="sticky top-[180px] bg-white rounded-xl border border-gray-100 p-5">
+              <div className="sticky top-[180px] bg-white rounded-xl border border-gray-100 p-5 max-h-[calc(100vh-200px)] overflow-y-auto scrollbar-thin">
                 {sidebarContent}
               </div>
             </aside>
