@@ -99,8 +99,8 @@ export default function Machines() {
       <Header />
 
       <main className="flex-1 pt-[81px] lg:pt-[125px]">
-        {/* Top bar */}
-        <div className="bg-white border-b border-gray-100 sticky top-[81px] lg:top-[125px] z-40">
+        {/* Top bar - flush with header bottom */}
+        <div className="bg-white border-b border-gray-100 sticky top-[80px] lg:top-[124px] z-[45]">
           <div className="max-w-[1260px] mx-auto px-5 sm:px-6 py-3.5">
             <div className="flex flex-wrap items-center gap-3">
               <h1 className="text-[20px] font-bold text-gray-900 mr-2">
