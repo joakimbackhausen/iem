@@ -196,7 +196,7 @@ export default function Machines() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                 {filtered.map(machine => (
                   <Link key={machine.id} href={`/maskine/${machineSlug(machine.id, machine.title)}`} className="group block">
-                    <div className="bg-white rounded-xl overflow-hidden border border-gray-100 hover:border-[#FFF100]/30 hover:shadow-lg transition-all duration-300">
+                    <div className="bg-white rounded-xl overflow-hidden border border-gray-100 hover:shadow-lg transition-all duration-300">
                       <div className="aspect-[4/3] relative overflow-hidden bg-gray-100">
                         {machine.pictures?.[0]?.url ? (
                           <SmartImage src={machine.pictures[0].url} alt={machine.title}
@@ -206,14 +206,15 @@ export default function Machines() {
                         )}
                       </div>
                       <div className="p-4">
-                        <p className="text-[12px] text-[#C4A800] font-semibold uppercase tracking-wider mb-1">{machine.brand}</p>
-                        <h3 className="text-[15px] font-semibold text-gray-900 leading-snug mb-3 line-clamp-2">{machine.title}</h3>
-                        <div className="flex items-end justify-between">
+                        <p className="text-[11px] text-[#C4A800] font-semibold tracking-[0.1em] uppercase mb-1.5">{machine.brand}</p>
+                        <h3 className="text-[15px] font-semibold text-[#1a1a1a] leading-snug mb-3 line-clamp-2">{machine.title}</h3>
+
+                        <div className="flex items-end justify-between pt-3 border-t border-gray-100">
                           <div>
-                            <p className="text-[18px] font-bold text-gray-900">{formatPrice(machine.price)}</p>
-                            <p className="text-[12px] text-gray-400">ekskl. moms</p>
+                            <p className="text-[18px] font-bold text-[#1a1a1a] tracking-tight">{formatPrice(machine.price)}</p>
+                            <p className="text-[11px] text-gray-400 mt-0.5">ekskl. moms</p>
                           </div>
-                          <span className="text-[13px] font-medium text-gray-400 group-hover:text-gray-600 transition-colors">
+                          <span className="text-[13px] font-semibold text-[#1B6B4A] group-hover:text-[#145A3B] flex items-center gap-1 transition-colors">
                             Se mere →
                           </span>
                         </div>
