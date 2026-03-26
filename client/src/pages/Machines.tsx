@@ -186,53 +186,6 @@ export default function Machines() {
           </div>
         </div>
 
-        {/* Category circles */}
-        {!loading && topCategories.length > 0 && (
-          <div className="max-w-[1400px] mx-auto px-5 sm:px-6 pt-8 pb-2">
-            <div className="flex justify-center gap-6 sm:gap-8 overflow-x-auto pb-4">
-              <Link
-                href="/maskiner"
-                className="flex flex-col items-center gap-2 flex-shrink-0 group"
-                onClick={() => setSelectedBrand(null)}
-              >
-                <div className={`w-[68px] h-[68px] sm:w-[76px] sm:h-[76px] rounded-full overflow-hidden border-[3px] transition-all duration-200 flex items-center justify-center ${
-                  !selectedCategory
-                    ? 'border-[#FFF100] shadow-lg shadow-[#FFF100]/20 scale-105'
-                    : 'border-gray-200 group-hover:border-[#FFF100]/50'
-                } bg-[#1a1a1a]`}>
-                  <span className="text-white text-[12px] font-bold tracking-wide">ALLE</span>
-                </div>
-                <div className="text-center">
-                  <p className={`text-[13px] font-semibold leading-tight ${!selectedCategory ? 'text-[#1a1a1a]' : 'text-gray-500'}`}>Alle</p>
-                  <p className="text-[12px] text-gray-400 mt-0.5">{machines.length}</p>
-                </div>
-              </Link>
-              {topCategories.map((cat) => (
-                <Link
-                  key={cat.id}
-                  href={selectedCategory === cat.id ? '/maskiner' : `/maskiner/${cat.id}`}
-                  className="flex flex-col items-center gap-2 flex-shrink-0 group"
-                >
-                  <div className={`w-[68px] h-[68px] sm:w-[76px] sm:h-[76px] rounded-full overflow-hidden border-[3px] transition-all duration-200 ${
-                    selectedCategory === cat.id
-                      ? 'border-[#FFF100] shadow-lg shadow-[#FFF100]/20 scale-105'
-                      : 'border-gray-200 group-hover:border-[#FFF100]/50'
-                  }`}>
-                    {cat.image ? (
-                      <SmartImage src={cat.image} alt={cat.name} className="w-full h-full object-cover" scaleOnWhitespace="scale-125" />
-                    ) : (
-                      <div className="w-full h-full bg-gray-100" />
-                    )}
-                  </div>
-                  <div className="text-center">
-                    <p className={`text-[13px] font-semibold leading-tight ${selectedCategory === cat.id ? 'text-[#1a1a1a]' : 'text-gray-500'}`}>{cat.name}</p>
-                    <p className="text-[12px] text-gray-400 mt-0.5">{cat.count}</p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* Grid */}
         <div className="max-w-[1400px] mx-auto px-5 sm:px-6 py-8">
