@@ -11,6 +11,25 @@ function formatPrice(price: number): string {
 
 type SortOption = 'default' | 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc';
 
+// Brand logo mapping
+const brandLogos: Record<string, string> = {
+  'Eurocomach': 'https://www.eurocomach.com/wp-content/uploads/2020/04/logo-eurocomach.png',
+  'Neomach': '',
+  'Ford/New Holland': 'https://logo.clearbit.com/newholland.com',
+  'New Holland': 'https://logo.clearbit.com/newholland.com',
+  'Case': 'https://logo.clearbit.com/casece.com',
+  'Venieri': 'https://logo.clearbit.com/venieri.com',
+  'Universal': '',
+  'BKT': 'https://logo.clearbit.com/bfribo.com',
+  'Galaxy': 'https://logo.clearbit.com/yokohama-oht.com',
+  'ITR': 'https://logo.clearbit.com/itrusa.com',
+  'Parker': 'https://logo.clearbit.com/parker.com',
+  'Faster': 'https://logo.clearbit.com/fastercouplings.com',
+  'Mann': 'https://logo.clearbit.com/mann-filter.com',
+  'Q8': 'https://logo.clearbit.com/q8oils.com',
+  'CRC': 'https://logo.clearbit.com/crcindustries.com',
+};
+
 function CollapsibleSection({ title, defaultOpen = true, children }: { title: string; defaultOpen?: boolean; children: React.ReactNode }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
@@ -114,6 +133,44 @@ export default function SpareParts() {
         </div>
       </div>
 
+      {/* Brands — first, open by default */}
+      <CollapsibleSection title="Mærke" defaultOpen={true}>
+        <div className="space-y-0.5">
+          <button
+            onClick={() => { setSelectedBrand(null); setMobileSidebar(false); }}
+            className={`w-full text-left px-3 py-2 rounded-lg text-[14px] font-medium transition-colors ${
+              !selectedBrand ? 'bg-[#FFF100]/10 text-[#1a1a1a] font-semibold' : 'text-gray-600 hover:bg-gray-50'
+            }`}
+          >
+            Alle mærker
+          </button>
+          {brands.map(b => {
+            const logo = brandLogos[b.brand];
+            return (
+              <button
+                key={b.brand}
+                onClick={() => { setSelectedBrand(selectedBrand === b.brand ? null : b.brand); setMobileSidebar(false); }}
+                className={`w-full text-left px-3 py-2 rounded-lg text-[14px] font-medium transition-colors ${
+                  selectedBrand === b.brand ? 'bg-[#FFF100]/10 text-[#1a1a1a] font-semibold' : 'text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                <span className="flex items-center gap-2.5">
+                  {logo ? (
+                    <img src={logo} alt={b.brand} className="w-5 h-5 object-contain flex-shrink-0" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                  ) : (
+                    <span className="w-5 h-5 rounded bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-400 flex-shrink-0">
+                      {b.brand.charAt(0)}
+                    </span>
+                  )}
+                  <span className="flex-1">{b.brand}</span>
+                  <span className="text-[12px] text-gray-400">{b.count}</span>
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </CollapsibleSection>
+
       {/* Categories */}
       <CollapsibleSection title="Kategorier" defaultOpen={true}>
         <div className="space-y-0.5">
@@ -139,34 +196,6 @@ export default function SpareParts() {
               <span className="flex justify-between items-center">
                 {cat.name}
                 <span className="text-[12px] text-gray-400">{cat.count}</span>
-              </span>
-            </button>
-          ))}
-        </div>
-      </CollapsibleSection>
-
-      {/* Brands */}
-      <CollapsibleSection title="Mærke" defaultOpen={false}>
-        <div className="space-y-0.5">
-          <button
-            onClick={() => { setSelectedBrand(null); setMobileSidebar(false); }}
-            className={`w-full text-left px-3 py-2 rounded-lg text-[14px] font-medium transition-colors ${
-              !selectedBrand ? 'bg-[#FFF100]/10 text-[#1a1a1a] font-semibold' : 'text-gray-600 hover:bg-gray-50'
-            }`}
-          >
-            Alle mærker
-          </button>
-          {brands.map(b => (
-            <button
-              key={b.brand}
-              onClick={() => { setSelectedBrand(selectedBrand === b.brand ? null : b.brand); setMobileSidebar(false); }}
-              className={`w-full text-left px-3 py-2 rounded-lg text-[14px] font-medium transition-colors ${
-                selectedBrand === b.brand ? 'bg-[#FFF100]/10 text-[#1a1a1a] font-semibold' : 'text-gray-600 hover:bg-gray-50'
-              }`}
-            >
-              <span className="flex justify-between items-center">
-                {b.brand}
-                <span className="text-[12px] text-gray-400">{b.count}</span>
               </span>
             </button>
           ))}
